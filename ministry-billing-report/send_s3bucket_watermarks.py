@@ -14,7 +14,6 @@
 
 from datetime import datetime
 import constants
-import pandas as pd
 import time
 import os
 import smtplib
@@ -100,24 +99,6 @@ def get_buckets(namespace, client):
     return bucket_dict
 
 
-def create_bucket_dataframe(bucket):
-    if "watermark" not in bucket:
-        bucket["watermark"] = bucket["total_size"]
-    return pd.DataFrame(
-        {
-            "bucket": [bucket["name"]],
-            "owner_username": [bucket["owner"]],
-            "created": [bucket["created"]],
-            "organization": [bucket["organization"]],
-            "project": [bucket["project"]],
-            "custodian": [bucket["custodian"]],
-            "steward": [bucket["steward"]],
-            "watermark": [bucket["watermark"]],
-            "bucket_size": [bucket["total_size"]]
-        }
-    )
-
-
 # print all bucket sizes out of the bucket dictionary
 def print_bucket(bucket):
     bucket_name = bucket["name"]
@@ -131,39 +112,6 @@ def print_bucket(bucket):
         f"Bucket: {bucket_name}, Bucket Size: {bucket_size}, Owner Username: {owner_username}, " +
         f"Project: {bucket_project}, Organization: {bucket_organization}, Custodian: {bucket_custodian}, Steward: {bucket_steward}"
     )
-
-
-# create a csv file dump of the buckets dictionary
-def csv_bucket_watermarks(buckets):
-    in_file_name = os.path.join(constants.WATERMARK_TEMP_DIR, f"{file_name}.csv")
-    frame = pd.read_csv(in_file_name, low_memory=False)
-    new_frame = None
-
-    for bucket_name in buckets:
-        read_frame = frame[frame["bucket"].isin([bucket_name])]
-        bucket = buckets[bucket_name]
-
-        # if bucket exists in the original csv, check old watermark
-        if read_frame["bucket"].count() > 0:
-            old_watermark = read_frame.iloc[0]["watermark"]
-            current_size = float(bucket["total_size"])
-            if current_size < old_watermark:
-                bucket["watermark"] = old_watermark
-
-        # add bucket data to a new frame
-        temp_frame = create_bucket_dataframe(bucket)
-        if new_frame is None:
-            new_frame = temp_frame
-        else:
-            new_frame = pd.concat([new_frame, temp_frame])
-
-    # save csv and return the path
-    datetime_file_name = datetime.today().strftime('%Y-%m-%d-%H')
-    new_path = os.path.join(constants.WATERMARK_TEMP_DIR, f"{file_name}_{datetime_file_name}.csv")
-    new_frame.to_csv(
-        new_path, header=True, index=False
-    )
-    return new_path
 
 
 # note, doesn't actually send csv, just a notification so we'll know it's run in the pod.
@@ -201,8 +149,7 @@ def main():
             return
         # get a dictionary of bucket info by name
         buckets_dict = get_buckets(constants.OBJSTOR_MGMT_NAMESPACE, client)
-        csv_path = csv_bucket_watermarks(buckets_dict)
-        csv_path = csv_path
+        buckets_dict = buckets_dict
     send_csv(constants.DEBUG_EMAIL)
 
 
