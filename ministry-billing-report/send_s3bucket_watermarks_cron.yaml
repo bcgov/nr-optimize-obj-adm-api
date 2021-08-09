@@ -1,0 +1,18 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: send-s3bucket-watermarks
+  namespace: 15be76-tools
+spec:
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  schedule: '1 * * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: send-s3bucket-watermarks
+              image: image-registry.openshift-image-registry.svc:5000/15be76-tools/send-s3-watermarks:latest
+              args:
+          restartPolicy: OnFailure

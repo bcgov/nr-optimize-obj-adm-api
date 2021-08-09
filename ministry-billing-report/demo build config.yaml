@@ -1,0 +1,104 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: add-mail-s3bucket-watermarks
+    app.openshift.io/vcs-uri: 'https://github.com/bcgov/nr-optimize-obj-adm-api'
+    openshift.io/generated-by: OpenShiftWebConsole
+  selfLink: >-
+    /apis/build.openshift.io/v1/namespaces/15be76-tools/buildconfigs/send-s3-watermarks
+  resourceVersion: '1458610100'
+  name: send-s3-watermarks
+  uid: 678d71a7-29d1-4601-8d31-ca78cb4cf551
+  creationTimestamp: '2021-08-06T20:43:06Z'
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: build.openshift.io/v1
+      time: '2021-08-06T21:16:27Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:app.openshift.io/vcs-ref': {}
+            'f:app.openshift.io/vcs-uri': {}
+            'f:openshift.io/generated-by': {}
+          'f:labels':
+            .: {}
+            'f:app': {}
+            'f:app.kubernetes.io/component': {}
+            'f:app.kubernetes.io/instance': {}
+            'f:app.kubernetes.io/part-of': {}
+        'f:spec':
+          'f:output':
+            'f:to':
+              .: {}
+              'f:kind': {}
+              'f:name': {}
+          'f:runPolicy': {}
+          'f:source':
+            'f:contextDir': {}
+            'f:git':
+              .: {}
+              'f:ref': {}
+              'f:uri': {}
+            'f:type': {}
+          'f:strategy':
+            'f:dockerStrategy':
+              .: {}
+              'f:dockerfilePath': {}
+              'f:pullSecret':
+                .: {}
+                'f:name': {}
+            'f:type': {}
+          'f:triggers': {}
+    - manager: openshift-apiserver
+      operation: Update
+      apiVersion: build.openshift.io/v1
+      time: '2021-08-06T21:16:30Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:status':
+          'f:lastVersion': {}
+  namespace: 15be76-tools
+  labels:
+    app: send-s3-watermarks
+    app.kubernetes.io/component: send-s3-watermarks
+    app.kubernetes.io/instance: send-s3-watermarks
+    app.kubernetes.io/part-of: send-s3-watermarks
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'send-s3-watermarks:latest'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Docker
+    dockerStrategy:
+      pullSecret:
+        name: artifactory-creds
+      dockerfilePath: send_s3bucket_watermarks_docker
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'https://github.com/bcgov/nr-optimize-obj-adm-api'
+      ref: add-mail-s3bucket-watermarks
+    contextDir: /ministry-billing-report
+  triggers:
+    - type: Generic
+      generic:
+        secretReference:
+          name: send-s3-watermarks-generic-webhook-secret
+    - type: GitHub
+      github:
+        secretReference:
+          name: send-s3-watermarks-github-webhook-secret
+    - type: ConfigChange
+  runPolicy: Serial
+status:
+  lastVersion: 9
