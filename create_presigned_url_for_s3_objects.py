@@ -4,7 +4,7 @@
 #              pre-determined amount of time (expiration)
 #              1.) looks for env vars for OBJSTOR_PUBLIC_ENDPOINT, AWS_ACCESS_KEY_ID
 #                  and AWS_SECRET_ACCESS_KEY
-#              2.) looks for the expiration/bucket name as parameters with a default
+#              2.) looks for the bucket name as a parameter with a default
 #              3.) looks for the object and expiration time as a command line config
 #
 # Author:      Michelle Douville
