@@ -18,5 +18,5 @@ This will output a pre-signed URL for your object that will allow the user to do
    
 **SECURITY CONSIDERATIONS**
   
-What are requestors of your pre-signed URLs allowed access to – everything, or are some areas restricted? In the case of restrictions, the Object Storage User ID used in the .env file should have a bucket policy applied that grants access only to what a requestor would be allowed to download from your bucket. [Our team](mailto:iitd.optimize@gov.bc.ca) can set this up by request through the Object Storage Admin Dashboard.
+What are requestors of your pre-signed URLs allowed access to – everything, or are some areas restricted? In the case of restrictions, the Object Storage User ID used in the .env file should have a bucket policy applied that grants access only to what a requestor would be allowed to download from your bucket. [Our team](mailto:iitd.optimize@gov.bc.ca) can set this up by request through the Object Storage Admin Dashboard.\
 The command-line variable value for “expiration” is counted in seconds. It is strongly recommended that you keep the expiration times short to ensure users can use only the current signed URLs and not ones signed in the past.
