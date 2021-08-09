@@ -16,8 +16,8 @@
 #
 # Notes:       see https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-presigned-urls.html
 #
-# usage: create_presigned_url_for_s3_objects.py -o <object>
-# example:  create_presigned_url_for_s3_objects.py -o test.txt
+# usage: create_presigned_url_for_s3_objects.py -o <object> -t <time>
+# example:  create_presigned_url_for_s3_objects.py -o test.txt -t 3600
 # -------------------------------------------------------------------------------
 
 
@@ -33,13 +33,15 @@ from botocore.exceptions import ClientError
 s3 = boto3.client("s3", config=Config(signature_version="s3v4"))
 
 object2share = ""  # name of object to share
-syntaxcmd = "Insufficient number of commands passed: create_presigned_url_for_s3_objects.py -o <object>"
+expiration = ""  # URL expiration time in seconds
+syntaxcmd = "Insufficient number of commands passed: create_presigned_url_for_s3_objects.py -o <object> -t <time>"
 
-if len(sys.argv) < 3:
+if len(sys.argv) < 2:
     print(syntaxcmd)
-    sys.exit(1)
+    sys.exit(2)
 
 parser = argparse.ArgumentParser()
+
 parser.add_argument(
     "-o",
     "--object",
@@ -49,12 +51,21 @@ parser.add_argument(
     metavar="string",
     type=str,
 )
+parser.add_argument(
+    "-t",
+    "--time",
+    dest="expiration",
+    required=True,
+    help="expiration time in seconds",
+    metavar="string",
+    type=str,
+)
 args = parser.parse_args()
 
 object2share = args.object2share
+expiration = args.expiration
 
-# provide the default parameters for expiry, endpoint, and bucketname for the S3 Object
-expiration = 3600  # default is 1 hour
+# provide the default parameters for bucketname for the S3 Object
 bucketname = "nrs-iit"
 
 # this script requires access to secret/secure information store as environment variables that are picked up at runtime
