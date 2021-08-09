@@ -1,0 +1,4 @@
+requests>=2.18.4,<3.0
+python-dotenv==0.17.1
+s3==3.0.0
+pyyaml==5.4.1
