@@ -1,15 +1,29 @@
-"""example of using the BOTO3 python client libraries for generating a token based expiry URL to access objects in S3 Storage buckets
-   Data: 2021-05-03
-   Author: michelle.douville@gov.bc.ca
-   usage: python create_presigned_url_for_s3_objects.py
-   NOTES:  (currently there are no command line configs, but looks for env vars for OBJSTOR_PUBLIC_ENDPOINT, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY,
-   and the expiration/bucket name as parameters with a default)
-   This script returns an URL that provides access to a S3 object for a pre-determined amount of time (expiration)
- """
+# -------------------------------------------------------------------------------
+# Name:        create_presigned_url_for_s3_objects.py
+# Purpose:     This script returns an URL that provides access to an S3 object for a
+#              pre-determined amount of time (expiration)
+#              1.) looks for env vars for OBJSTOR_PUBLIC_ENDPOINT, AWS_ACCESS_KEY_ID
+#                  and AWS_SECRET_ACCESS_KEY
+#              2.) looks for the expiration/bucket name as parameters with a default
+#              3.) looks for the object as a command line config
+#
+# Author:      Michelle Douville
+#              edits by the Optimization Team
+#
+# Created:     2021
+# Copyright:   (c) Michelle Douville & IITD Optimization Team 2021
+# Licence:     mine
+#
+# Notes:       see https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-presigned-urls.html
+#
+# usage: create_presigned_url_for_s3_objects.py -o <object>
+# example:  create_presigned_url_for_s3_objects.py -o test.txt
+# -------------------------------------------------------------------------------
 
-# see https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-presigned-urls.html
 
 import logging
+import argparse
+import sys
 import constants
 import boto3
 from botocore.client import Config
@@ -18,7 +32,26 @@ from botocore.exceptions import ClientError
 # Get the service client with sigv4 configured
 s3 = boto3.client("s3", config=Config(signature_version="s3v4"))
 
-object2share = "test.txt"  # name of object to share
+object2share = ""  # name of object to share
+syntaxcmd = "Insufficient number of commands passed: create_presigned_url_for_s3_objects.py -o <object>"
+
+if len(sys.argv) < 3:
+    print(syntaxcmd)
+    sys.exit(1)
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-o",
+    "--object",
+    dest="object2share",
+    required=True,
+    help="object aka file name",
+    metavar="string",
+    type=str,
+)
+args = parser.parse_args()
+
+object2share = args.object2share
 
 # provide the default parameters for expiry, endpoint, and bucketname for the S3 Object
 expiration = 3600  # default is 1 hour
