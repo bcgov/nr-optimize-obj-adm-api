@@ -2,7 +2,7 @@ FROM docker-remote.artifacts.developer.gov.bc.ca/alpine:3.14
 WORKDIR /src
 COPY ["*", "./"]
 RUN apk add --no-cache python3 py3-pip && \
-    apk add --no-cache python3-devel.x86_64 && \
+    sudo apt-get install python3.9-dev && \
     apk add build-base && \
     pip install -r requirements.txt
 ENTRYPOINT ["python3", "send_s3bucket_watermarks.py"]
