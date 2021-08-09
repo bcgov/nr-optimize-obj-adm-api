@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: send-s3bucket-watermarks
+  namespace: 15be76-dev
+spec:
+  selector: {}
+  template:
+    metadata:
+      name: send-s3bucket-watermarks
+    spec:
+      containers:
+        - name: send-s3bucket-watermarks
+          image: image-registry.openshift-image-registry.svc:5000/15be76-tools/send-s3-watermarks:latest
+          args:
+      restartPolicy: OnFailure
+      env:
+      - name: SKIP_OBJSTOR
+        valueFrom:
+          secretKeyRef:
+            name: ministry-billing-report
+            key: SKIP_OBJSTOR
