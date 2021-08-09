@@ -2,7 +2,7 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: send-s3bucket-watermarks
-  namespace: 15be76-tools
+  namespace: 15be76-dev
 spec:
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
