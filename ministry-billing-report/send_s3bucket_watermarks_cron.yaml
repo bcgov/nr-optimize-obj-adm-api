@@ -4,9 +4,9 @@ metadata:
   name: send-s3bucket-watermarks
   namespace: 15be76-dev
 spec:
-  successfulJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
-  schedule: '1 * * * *'
+  schedule: '* * * * *'
   jobTemplate:
     spec:
       template:

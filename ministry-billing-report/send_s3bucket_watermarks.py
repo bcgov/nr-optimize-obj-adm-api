@@ -12,19 +12,19 @@
 # TODO: Currently script doesn't actually read old watermark data, it just dumps current to csv.
 # -------------------------------------------------------------------------------
 
-# from datetime import datetime
+from datetime import datetime
 import constants
-# import time
+import time
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-# from ecsclient.common.exceptions import ECSClientException
-# from ecsclient.client import Client
+from ecsclient.common.exceptions import ECSClientException
+from ecsclient.client import Client
 
 file_name = "watermark"
 
-'''
+
 # login to the administrative DELL ECS API
 def adminLogin(user, password, endpoint):
     client = Client(
@@ -111,7 +111,6 @@ def print_bucket(bucket):
         f"Bucket: {bucket_name}, Bucket Size: {bucket_size}, Owner Username: {owner_username}, " +
         f"Project: {bucket_project}, Organization: {bucket_organization}, Custodian: {bucket_custodian}, Steward: {bucket_steward}"
     )
-'''
 
 
 # note, doesn't actually send csv, just a notification so we'll know it's run in the pod.
@@ -140,7 +139,6 @@ def send_csv(recipient):
 
 
 def main():
-    '''
     # skip the bulk of the work until confirmed it's in the pod and runs, remove this env variable later
     if constants.SKIP_OBJSTOR.upper() == 'FALSE':
         client = adminLogin(constants.OBJSTOR_ADMIN, constants.OBJSTOR_ADMIN_PASS, constants.OBJSTOR_MGMT_ENDPOINT)
@@ -150,7 +148,7 @@ def main():
             return
         # get a dictionary of bucket info by name
         buckets_dict = get_buckets(constants.OBJSTOR_MGMT_NAMESPACE, client)
-        buckets_dict = buckets_dict'''
+        buckets_dict = buckets_dict
     send_csv(constants.DEBUG_EMAIL)
 
 
