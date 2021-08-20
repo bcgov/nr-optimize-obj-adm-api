@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [          
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "create_S3bucket_and_user.py",
+            "args": [
+                "-u", "michelle.douville@gov.bc.ca",
+                "-p", "<idir password here>",
+                "-", "listusers"
+            ],
+            "console": "integratedTerminal"
+        },          
+        {
+            "name": "Python: Minio Data Sync",
+            "type": "python",
+            "request": "launch",
+            "program": "minio_data_sync.py",
+            "args": [],
+            "console": "integratedTerminal"
+        }
+    ]
+}
