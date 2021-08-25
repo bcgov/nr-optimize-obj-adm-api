@@ -1,0 +1,6 @@
+FROM docker-remote.artifacts.developer.gov.bc.ca/alpine:3.14
+WORKDIR /src
+COPY ["wiof_objstor_datasync.py", "objstor_datasync_requirements.txt", "wiof_objstor_constants.py" "./"]
+RUN apk add --no-cache python3 py3-pip && \
+    pip install -r objstor_datasync_requirements.txt
+ENTRYPOINT ["python3", "wiof_objstor_datasync.py"]
