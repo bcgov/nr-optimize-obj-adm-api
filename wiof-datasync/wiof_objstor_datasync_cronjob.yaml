@@ -1,0 +1,18 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: objstor_data_sync
+spec:
+  schedule: '@daily'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: objstor_data_sync_test
+              image: image-registry.openshift-image-registry.svc:5000/15be76-tools/objstor_data_sync:latest
+              args:
+             volumeMounts:
+                - mountPath: /etc/datasynctest
+                  name: objstor-minio-datasync-test
+          restartPolicy: OnFailure

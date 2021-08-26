@@ -16,19 +16,21 @@ from datetime import datetime
 from minio import Minio
 from minio.error import S3Error
 
-pvc_directory = "C:\\TEMP\\sync-files-dir\\testfolder"
+# update to be the directory in the pod that the PVC is mounted to
+pvc_directory = "J:\\Scripts\\Testing\\Sync_directory"
 
 
 # copy a pvc file to bucket
 def copy_to_bucket(minio_client, file_name):
     print("copying to bucket: ", file_name)
-    return
+
     # upload file, never been run
     minio_client.fput_object(
         constants.OBJSTOR_BUCKET,
         file_name,
         os.path.join(pvc_directory, file_name),
     )
+    return
 
 
 # copy a bucket file to pvc
@@ -63,7 +65,7 @@ def main(argv):
         file_date = datetime.timestamp(bucket_file.last_modified)
         file_dict[file_name] = {
             "file_name": file_name,
-            "bucket_last_modified": file_date
+            "bucket_last_modified": file_date,
         }
 
     # add pvc file names and last modified timestamp to comparison dictionary
@@ -76,7 +78,7 @@ def main(argv):
         else:
             file_dict[file_name] = {
                 "file_name": file_name,
-                "pvc_last_modified": file_date
+                "pvc_last_modified": file_date,
             }
 
     pvc_timestamp_sync_list = []
@@ -109,7 +111,10 @@ def main(argv):
         file_name = bucket_file.object_name
         bucket_last_modified = datetime.timestamp(bucket_file.last_modified)
         if file_name in pvc_timestamp_sync_list:
-            os.utime(os.path.join(pvc_directory, file_name), (bucket_last_modified, bucket_last_modified))
+            os.utime(
+                os.path.join(pvc_directory, file_name),
+                (bucket_last_modified, bucket_last_modified),
+            )
 
 
 if __name__ == "__main__":
