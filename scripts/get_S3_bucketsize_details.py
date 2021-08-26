@@ -107,7 +107,7 @@ def main(argv):
     listDataFrame1["Folder Size MB"] = listDataFrame1["Folder Size MB"].round(2)
 
     # export to Excel, label the sheets
-    with ExcelWriter((outputdirectory) + r"//ENVFOI_Folder_Size_Report.xlsx") as writer:
+    with ExcelWriter((outputdirectory) + r"//Bucket_Folder_Size_Report.xlsx") as writer:
         listDataFrame.to_excel(writer, sheet_name="Main Folder Sizes")
         listDataFrame1.to_excel(writer, sheet_name="Subfolder Sizes")
 
