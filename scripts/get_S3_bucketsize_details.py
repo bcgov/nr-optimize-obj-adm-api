@@ -23,6 +23,7 @@
 import constants
 import argparse
 import sys
+import time
 import pandas as pd
 from pandas import ExcelWriter
 from boto3 import client
@@ -72,6 +73,9 @@ def main(argv):
         aws_access_key_id=AWS_SERVER_PUBLIC_KEY,
         aws_secret_access_key=AWS_SERVER_SECRET_KEY,
     )
+    
+    # get the current date and time
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
 
     # create empty list to hold variable values
     listOfMainFolder = []
@@ -107,7 +111,7 @@ def main(argv):
     listDataFrame1["Folder Size MB"] = listDataFrame1["Folder Size MB"].round(2)
 
     # export to Excel, label the sheets
-    with ExcelWriter((outputdirectory) + r"//Bucket_Folder_Size_Report.xlsx") as writer:
+    with ExcelWriter((outputdirectory) + r"\\Bucket_Folder_Size_Report_" + (timestamp) + ".xlsx") as writer:
         listDataFrame.to_excel(writer, sheet_name="Main Folder Sizes")
         listDataFrame1.to_excel(writer, sheet_name="Subfolder Sizes")
 
