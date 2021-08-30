@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 # Script specific ignores
-ministry_billing_report/data-relay/run_server_side_manager.bat
-ministry_billing_report/data-relay/oc.exe
+ministry_billing_report/metadata_relay/run_server_side_manager.bat
+ministry_billing_report/metadata_relay/oc.exe
