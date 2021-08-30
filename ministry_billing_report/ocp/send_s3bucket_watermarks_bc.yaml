@@ -54,7 +54,7 @@ spec:
     git:
       uri: 'https://github.com/bcgov/nr-optimize-obj-adm-api'
       ref: add-mail-s3bucket-watermarks
-    contextDir: /ministry-billing-report
+    contextDir: /ministry_billing_report
   triggers:
     - type: Generic
       generic:
