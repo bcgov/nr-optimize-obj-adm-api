@@ -5,10 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: relay_bucket_data",
+            "type": "python",
+            "request": "launch",
+            "program": "ministry-billing-report\\data-relay\\relay_bucket_data.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: send_s3bucket_watermarks",
             "type": "python",
             "request": "launch",
-            "program": "ministry-billing-report\\send_s3bucket_watermarks.py",
+            "program": "ministry-billing-report\\ocp\\send_s3bucket_watermarks.py",
             "args": [],
             "console": "integratedTerminal"
         }
