@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Script specific ignores
+ministry-billing-report/data-relay/run_server_side_manager.bat
+ministry-billing-report/data-relay/oc.exe
