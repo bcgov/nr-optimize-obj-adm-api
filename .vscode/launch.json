@@ -16,7 +16,15 @@
             "name": "Python: send_s3bucket_watermarks",
             "type": "python",
             "request": "launch",
-            "program": "ministry-billing-report\\ocp\\send_s3bucket_watermarks.py",
+            "program": "ministry-billing-report\\ocp\\send_s3bucket_watermarks.py", 
+            "args": [],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Minio Data Sync",
+            "type": "python",
+            "request": "launch",
+            "program": "minio_data_sync.py",
             "args": [],
             "console": "integratedTerminal"
         }
