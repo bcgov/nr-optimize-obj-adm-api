@@ -17,7 +17,7 @@ from minio import Minio
 from minio.error import S3Error
 
 # update to be the directory in the pod that the PVC is mounted to
-pvc_directory = "/etc/datasynctest"
+pvc_directory = "/etc/datasync"
 
 
 # copy a pvc file to bucket
