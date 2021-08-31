@@ -127,6 +127,8 @@ def main(argv):
 
 if __name__ == "__main__":
     try:
+        print("Starting copy...")
         main(sys.argv[1:])
+        print("Copy finished.")
     except S3Error as exc:
         print("error occurred.", exc)
