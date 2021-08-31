@@ -11,7 +11,6 @@
 import sys
 import wiof_objstor_constants
 import os
-import time
 
 from datetime import datetime
 from minio import Minio
@@ -128,8 +127,6 @@ def main(argv):
 
 if __name__ == "__main__":
     try:
-        time.sleep(60)
         main(sys.argv[1:])
-        time.sleep(600)
     except S3Error as exc:
         print("error occurred.", exc)
