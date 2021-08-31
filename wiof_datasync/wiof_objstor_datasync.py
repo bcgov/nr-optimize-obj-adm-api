@@ -34,8 +34,8 @@ def copy_to_bucket(minio_client, file_name):
 
 
 # copy a bucket file to pvc
-def copy_to_pvc(minio_client, file_name, last_modified):
-    print("copying to pvc: ", file_name)
+def copy_to_pvc(minio_client, file_name, last_modified, pvc_directory):
+    print("copying to pvc: ", file_name, pvc_directory)
     minio_client.fget_object(
         wiof_objstor_constants.OBJSTOR_BUCKET,
         file_name,
@@ -95,7 +95,9 @@ def main(argv):
                 pvc_timestamp_sync_list.append(file_name)
             elif file["pvc_last_modified"] < file["bucket_last_modified"]:
                 # bucket has newer file
-                copy_to_pvc(minio_client, file_name, file["bucket_last_modified"])
+                copy_to_pvc(
+                    minio_client, file_name, file["bucket_last_modified"], pvc_directory
+                )
             # no work to do if the same last modified date
         elif "pvc_last_modified" in file:
             # file is only in the pvc
@@ -103,7 +105,9 @@ def main(argv):
             pvc_timestamp_sync_list.append(file_name)
         else:
             # file is only in the bucket
-            copy_to_pvc(minio_client, file_name, file["bucket_last_modified"])
+            copy_to_pvc(
+                minio_client, file_name, file["bucket_last_modified"], pvc_directory
+            )
 
     # sync the pvc timestamps up with the new bucket files, as we can't update timestamps on bucket files
     bucket_files = minio_client.list_objects(
