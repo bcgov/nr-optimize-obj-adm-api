@@ -128,7 +128,7 @@ def main(argv):
 
 if __name__ == "__main__":
     try:
-        time.sleep(120)
+        time.sleep(60)
         main(sys.argv[1:])
         time.sleep(600)
     except S3Error as exc:
