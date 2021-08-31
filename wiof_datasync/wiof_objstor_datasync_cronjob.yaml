@@ -1,18 +1,43 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: objstor_data_sync
+  name: objstor-data-sync-test
 spec:
-  schedule: '@daily'
+  schedule: 0 0 * * *
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-            - name: objstor_data_sync_test
-              image: image-registry.openshift-image-registry.svc:5000/15be76-tools/objstor_data_sync:latest
+            - name: objstor-data-sync-test
+              image: image-registry.openshift-image-registry.svc:5000/15be76-tools/objstor-data-sync-test:latest
               args:
-             volumeMounts:
+              volumeMounts:
                 - mountPath: /etc/datasynctest
-                  name: objstor-minio-datasync-test
+                  name: objstor-data-sync
+              env:
+                - name: OBJSTOR_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: objstor-datasync-test
+                      key: OBJSTOR_ACCESS_KEY
+                - name: OBJSTOR_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: objstor-datasync-test
+                      key: OBJSTOR_BUCKET
+                - name: OBJSTOR_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: objstor-datasync-test
+                      key: OBJSTOR_ENDPOINT
+                - name: OBJSTOR_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: objstor-datasync-test
+                      key: OBJSTOR_SECRET_KEY
           restartPolicy: OnFailure
+          volumes:
+            - name: objstor-data-sync
+              persistentVolumeClaim:
+              claimName: objstor-data-sync-test
