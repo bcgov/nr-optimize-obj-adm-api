@@ -1,43 +1,46 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: objstor-data-sync-test
+  name: objstor-pvc-data-sync-dev
 spec:
-  schedule: 0 0 * * *
+  schedule: "0 0 * * *"
   jobTemplate:
     spec:
       template:
         spec:
+          volumes:
+            - name: datasync
+              persistentVolumeClaim:
+                claimName: wiof-dlvr-app-data-vol2
+          backoffLimit: 6
           containers:
-            - name: objstor-data-sync-test
-              image: image-registry.openshift-image-registry.svc:5000/15be76-tools/objstor-data-sync-test:latest
+            - name: objstor-pvc-data-sync-dev
+              image: image-registry.openshift-image-registry.svc:5000/b24326-dev/objstor-pvc-data-sync-dev:latest
               args:
               volumeMounts:
-                - mountPath: /etc/datasynctest
-                  name: objstor-data-sync
+                - name: datasync
+                  mountPath: /etc/datasync
               env:
                 - name: OBJSTOR_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: objstor-datasync-test
+                      name: objstor-datasync-dlvr
                       key: OBJSTOR_ACCESS_KEY
                 - name: OBJSTOR_BUCKET
                   valueFrom:
                     secretKeyRef:
-                      name: objstor-datasync-test
+                      name: objstor-datasync-dlvr
                       key: OBJSTOR_BUCKET
                 - name: OBJSTOR_ENDPOINT
                   valueFrom:
                     secretKeyRef:
-                      name: objstor-datasync-test
+                      name: objstor-datasync-dlvr
                       key: OBJSTOR_ENDPOINT
                 - name: OBJSTOR_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: objstor-datasync-test
+                      name: objstor-datasync-dlvr
                       key: OBJSTOR_SECRET_KEY
           restartPolicy: OnFailure
-          volumes:
-            - name: objstor-data-sync
-              persistentVolumeClaim:
-              claimName: objstor-data-sync-test
+          failedJobsHistoryLimit: 3
+          successfulJobsHistoryLimit: 3
