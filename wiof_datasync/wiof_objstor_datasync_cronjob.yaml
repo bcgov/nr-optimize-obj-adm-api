@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: objstor-pvc-data-sync-dev
 spec:
-  schedule: "0 0 * * *"
+  schedule: "0 22 * * *"
   jobTemplate:
     spec:
       template:
