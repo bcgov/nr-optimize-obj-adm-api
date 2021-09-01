@@ -56,12 +56,15 @@ def send_admin_email(message_detail):
     else:
         msg["To"] = constants.DEBUG_EMAIL
         msg["From"] = constants.DEBUG_EMAIL
-    html = (
-        """<html><head></head><body><p>
-        A scheduled script relay_bucket_data.py has sent an automated report email. Detailed Message:<br />"""
-        + str(message_detail)
-        + """</p></body></html>"""
-    )
+
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    host_name = socket.gethostname()
+    html = "<html><head></head><body><p>" \
+        + "A scheduled script relay_bucket_data.py has sent an automated report email." \
+        + "<br />Server: " + str(host_name) \
+        + "<br />File Path: " + dir_path + "<br />" \
+        + str(message_detail) \
+        + "</p></body></html>"
     msg.attach(MIMEText(html, "html"))
     s = smtplib.SMTP(constants.SMTP_SERVER)
     s.sendmail(msg["From"], msg["To"], msg.as_string())
@@ -77,26 +80,20 @@ def try_admin_login(user, password, endpoint):
             counter = 0
         except ECSClientException as ecsclient_ex:
             if ecsclient_ex.message == 'Invalid username or password':
-                dir_path = os.path.dirname(os.path.realpath(__file__))
-                host_name = socket.gethostname()
                 message_detail = "The Relay Bucket Data script failed to sign in to Object Storage Management " \
                     + "API due to an invalid username or password error.<br />" \
                     + "<br />Username: " + constants.OBJSTOR_ADMIN \
-                    + "<br />Server: " + str(host_name) \
-                    + "<br />File Path: " + dir_path
+                    + "<br />Message Detail: " + ecsclient_ex.message
                 send_admin_email(message_detail)
                 counter = 0
                 pass
             elif counter == 1:
                 print("Connection to S3 Failed, closing")
-                host_name = socket.gethostname()
                 message_detail = "The Relay Bucket Data script failed to sign in to Object Storage Management " \
                     + "API with the following message.<br />" \
                     + "<br />Message: " + ecsclient_ex.message \
                     + "<br />Message Detail: " + ecsclient_ex.message_detail \
-                    + "<br />Username: " + constants.OBJSTOR_ADMIN \
-                    + "<br />Server: " + str(host_name) \
-                    + "<br />File Path: " + dir_path
+                    + "<br />Username: " + constants.OBJSTOR_ADMIN
                 send_admin_email(message_detail)
             else:
                 print("Connection to S3 Failed, trying again in 10")
