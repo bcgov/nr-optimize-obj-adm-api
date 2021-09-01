@@ -5,8 +5,8 @@
 $OC_BIN='oc.exe'
 
 $ENVIRONMENTS = @{
-    DLV =  @{NAMESPACE= "b24326-dev"; SRC = "\\repo\E$\GeoDriveCache\secnto\"; 	PVC = "wiof-dlvr-app-data-vol2"};
-    TEST = @{NAMESPACE= "b24326-test"; SRC = "\\repo\E$\GeoDriveCache\nojnop\"; 	PVC = "wiof-test-app-data-vol2"};
+    DLV =  @{NAMESPACE= "b24326-dev"; SRC = "\\testappfiles.nrs.bcgov\wiof_dlvr\"; PVC = "wiof-dlvr-app-data-vol2"};
+    TEST = @{NAMESPACE= "b24326-test"; SRC = "\\testappfiles.nrs.bcgov\wiof_test\"; PVC = "wiof-test-app-data-vol2"};
     PROD = @{NAMESPACE= "b24326-prod"; SRC = "\\appfiles.nrs.bcgov\wiof_prod\";     PVC = "wiof-prod-app-data-vol2"}
 }
 
