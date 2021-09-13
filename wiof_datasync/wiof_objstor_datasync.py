@@ -17,6 +17,7 @@ from minio import Minio
 from minio.error import S3Error
 
 # update to be the directory in the pod that the PVC is mounted to
+# pvc_directory = "/etc/datasync"
 pvc_directory = "/etc/datasync"
 
 
@@ -59,7 +60,7 @@ def main(argv):
     # add bucket file names and last modified timestamp to comparison dictionary
     bucket_files = minio_client.list_objects(
         wiof_objstor_constants.OBJSTOR_BUCKET,
-        recursive=False,
+        recursive=True,
         use_url_encoding_type=False,
     )
     for bucket_file in bucket_files:
@@ -112,7 +113,7 @@ def main(argv):
     # sync the pvc timestamps up with the new bucket files, as we can't update timestamps on bucket files
     bucket_files = minio_client.list_objects(
         wiof_objstor_constants.OBJSTOR_BUCKET,
-        recursive=False,
+        recursive=True,
         use_url_encoding_type=False,
     )
     for bucket_file in bucket_files:
