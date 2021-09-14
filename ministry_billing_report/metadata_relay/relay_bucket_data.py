@@ -114,12 +114,14 @@ def get_buckets(namespace, client):
     bucket_list = namespace_response["object_bucket"]
     bucket_dict = {}
     sample_date = datetime.date.today()
+    sample_month = datetime.datetime.today().strftime('%Y-%m')
     for bucket in bucket_list:
         bucket_response = client.bucket.getbucketdetails(namespace, bucket["name"])
         bucket_response["owner"] = bucket["owner"]
         bucket_response["softquota"] = bucket["softquota"]
         bucket_response["notification_size"] = bucket["notification_size"]
         bucket_response["created"] = datetime.datetime.strptime(bucket['created'].split('T')[0], '%Y-%m-%d')
+        bucket_response["month"] = sample_month
         bucket_response["sample_date"] = sample_date
         if "owner" not in bucket:
             bucket_response["owner"] = "No Owner"
@@ -217,7 +219,7 @@ def update_database(buckets_dict):
         bucket_tups = []
         for bucket_name in buckets_dict:
             bucket = buckets_dict[bucket_name]
-            watermark_tup = (bucket['name'], bucket['sample_date'], bucket['total_size'])
+            watermark_tup = (bucket['name'], bucket['name']+'-'+bucket['month'], bucket['sample_date'], bucket['total_size'])
             watermark_tups.append(watermark_tup)
             bucket_tup = (
                 bucket['name'],
@@ -240,10 +242,16 @@ def update_database(buckets_dict):
         ''', bucket_tups)
         print('Upsert Complete')
 
-        # insert watermark data
-        print('Inserting watermark data...')
-        cur.executemany("INSERT INTO bucketwatermarkmonthly(bucketname,date,watermarkgb) VALUES(%s,%s,%s)", watermark_tups)
-        print('Insert Complete.')
+        # Upsert watermark data
+        print('Upserting watermark data...')
+        cur.executemany('''
+            INSERT INTO bucketwatermarkmonthly AS b (bucketname,bucketnamemonth,date,watermarkgb)
+            VALUES(%s,%s,%s,%s)
+            ON CONFLICT (bucketnamemonth) DO UPDATE SET
+            (date,watermarkgb)=(EXCLUDED.date, EXCLUDED.watermarkgb)
+            WHERE EXCLUDED.watermarkgb > b.watermarkgb;
+        ''', watermark_tups)
+        print('Upsert Complete.')
 
         conn.commit()
 
@@ -251,14 +259,10 @@ def update_database(buckets_dict):
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
-        host_name = socket.gethostname()
-        dir_path = os.path.dirname(os.path.realpath(__file__))
         message_detail = "The Relay Bucket Data script failed to sign in to Submit data to POSTGRES Database." \
             + "Connection or insert failed with the following message.<br />" \
             + "<br />Message: " + error \
-            + "<br />Username: " + constants.POSTGRES_USER \
-            + "<br />Server: " + str(host_name) \
-            + "<br />File Path: " + dir_path
+            + "<br />Username: " + constants.POSTGRES_USER
         send_admin_email(message_detail)
     finally:
         if conn is not None:
