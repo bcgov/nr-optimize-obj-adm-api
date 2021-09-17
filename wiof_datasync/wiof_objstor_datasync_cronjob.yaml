@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: objstor-pvc-data-sync-dev
+  name: objstor-pvc-data-sync
 spec:
   schedule: "0 22 * * *"
   jobTemplate:
@@ -11,11 +11,11 @@ spec:
           volumes:
             - name: datasync
               persistentVolumeClaim:
-                claimName: wiof-dlvr-app-data-vol2
+                claimName: wiof-test-app-data-vol2
           backoffLimit: 6
           containers:
-            - name: objstor-pvc-data-sync-dev
-              image: image-registry.openshift-image-registry.svc:5000/b24326-dev/objstor-pvc-data-sync-dev:latest
+            - name: objstor-pvc-data-sync
+              image: image-registry.openshift-image-registry.svc:5000/b24326-test/objstor-pvc-data-sync:test-1.0
               args:
               volumeMounts:
                 - name: datasync
@@ -24,22 +24,22 @@ spec:
                 - name: OBJSTOR_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: objstor-datasync-dlvr
+                      name: objstor-datasync-test
                       key: OBJSTOR_ACCESS_KEY
                 - name: OBJSTOR_BUCKET
                   valueFrom:
                     secretKeyRef:
-                      name: objstor-datasync-dlvr
+                      name: objstor-datasync-test
                       key: OBJSTOR_BUCKET
                 - name: OBJSTOR_ENDPOINT
                   valueFrom:
                     secretKeyRef:
-                      name: objstor-datasync-dlvr
+                      name: objstor-datasync-test
                       key: OBJSTOR_ENDPOINT
                 - name: OBJSTOR_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: objstor-datasync-dlvr
+                      name: objstor-datasync-test
                       key: OBJSTOR_SECRET_KEY
           restartPolicy: OnFailure
           failedJobsHistoryLimit: 3
