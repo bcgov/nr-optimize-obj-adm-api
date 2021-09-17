@@ -57,8 +57,8 @@ def send_admin_email(message_detail):
         msg["To"] = constants.DEBUG_EMAIL
         msg["From"] = constants.DEBUG_EMAIL
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
     host_name = socket.gethostname()
+    dir_path = os.path.dirname(os.path.realpath(__file__))
     html = "<html><head></head><body><p>" \
         + "A scheduled script relay_bucket_data.py has sent an automated report email." \
         + "<br />Server: " + str(host_name) \

@@ -13,6 +13,16 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Python: get_S3_bucketsize_details",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\get_S3_bucketsize_details.py",
+            "args": [
+                "-o", "c:\\TEMP"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: send_s3bucket_watermarks",
             "type": "python",
             "request": "launch",
