@@ -47,6 +47,8 @@ def copy_to_pvc(minio_client, file_name, last_modified, pvc_directory):
 
 def main(argv):
 
+    # wiof_objstor_constants.print_constants()
+
     minio_client = Minio(
         endpoint=wiof_objstor_constants.OBJSTOR_ENDPOINT,
         access_key=wiof_objstor_constants.OBJSTOR_ACCESS_KEY,
@@ -127,7 +129,7 @@ def main(argv):
         wiof_objstor_constants.OBJSTOR_BUCKET,
         recursive=True,
         use_url_encoding_type=False,
-    )    
+    )
     for bucket_file in bucket_files:
         file_name = bucket_file.object_name
         bucket_last_modified = datetime.timestamp(bucket_file.last_modified)
