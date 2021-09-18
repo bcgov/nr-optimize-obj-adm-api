@@ -66,7 +66,6 @@ def main(argv):
     for bucket_file in bucket_files:
         file_name = bucket_file.object_name
         file_date = datetime.timestamp(bucket_file.last_modified)
-        # print(f"file_name name in bucket: {file_name}")
         if not bucket_file.is_dir:
             file_dict[file_name] = {
                 "file_name": file_name,
@@ -81,36 +80,26 @@ def main(argv):
 
             rel_dir = os.path.relpath(dirname, pvc_directory)
             rel_file = file_name
-            rel_file_replaced = file_name
             if rel_dir != ".":
                 rel_file = os.path.join(rel_dir, file_name)
                 # next line only needed for Windows as it uses backslashes instead of forward slashes
-                rel_file_replaced = rel_file.replace("\\", "/")
-                # print(f"rel_file_replaced: {rel_file_replaced}")
-            # print(f"rel_file: {rel_file}")
-            # print("dirname:", dirname)
-            # print(f"rel_dir: {rel_dir}")
-            # print(f"file_name in PVC: {file_name}")
+                if os.name == "nt":
+                    rel_file = rel_file.replace("\\", "/")
             file_date = os.path.getmtime(os.path.join(dirname, file_name))
-            # print(f"file_date: {file_date}")
-            if rel_file_replaced in file_dict:
-                file_dict[rel_file_replaced]["pvc_last_modified"] = file_date
+            if rel_file in file_dict:
+                file_dict[rel_file]["pvc_last_modified"] = file_date
             else:
-                file_dict[rel_file_replaced] = {
-                    "file_name": rel_file_replaced,
+                file_dict[rel_file] = {
+                    "file_name": rel_file,
                     "pvc_last_modified": file_date,
                 }
 
-    pvc_timestamp_sync_list = []
     # put newer bucket files into pvc, and newer pvc files into bucket, adjust timestamps
+    pvc_timestamp_sync_list = []
     for file_name in file_dict:
         file = file_dict[file_name]
-        # print("file_name: " + file_name)
         if "pvc_last_modified" in file and "bucket_last_modified" in file:
             # both directories have a copy of the file
-            # print("if pvc_last_modified: " + str(file["pvc_last_modified"]))
-            # print("if bucket_last_modified: " + str(file["bucket_last_modified"]))
-
             if file["pvc_last_modified"] > file["bucket_last_modified"]:
                 # pvc has newer file
                 copy_to_bucket(minio_client, pvc_directory, file_name)
@@ -121,15 +110,13 @@ def main(argv):
                     minio_client, file_name, file["bucket_last_modified"], pvc_directory
                 )
             # no work to do if the same last modified date
-        elif "pvc_last_modified" in file:
-            # print("else pvc_last_modified: " + str(file["pvc_last_modified"]))
 
+        elif "pvc_last_modified" in file:
             # file is only in the pvc
             copy_to_bucket(minio_client, pvc_directory, file_name)
             pvc_timestamp_sync_list.append(file_name)
-        else:
-            # print("else bucket_last_modified: " + str(file["bucket_last_modified"]))
 
+        else:
             # file is only in the bucket
             copy_to_pvc(
                 minio_client, file_name, file["bucket_last_modified"], pvc_directory
@@ -140,7 +127,7 @@ def main(argv):
         wiof_objstor_constants.OBJSTOR_BUCKET,
         recursive=True,
         use_url_encoding_type=False,
-    )
+    )    
     for bucket_file in bucket_files:
         file_name = bucket_file.object_name
         bucket_last_modified = datetime.timestamp(bucket_file.last_modified)
