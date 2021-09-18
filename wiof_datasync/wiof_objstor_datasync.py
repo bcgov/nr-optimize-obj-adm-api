@@ -67,6 +67,10 @@ def main(argv):
     )
     for bucket_file in bucket_files:
         file_name = bucket_file.object_name
+        print(f"file_name: {file_name}")
+        if bucket_file.last_modified is None:
+            print(f"file {bucket_file} missing last_modified")
+            continue
         file_date = datetime.timestamp(bucket_file.last_modified)
         if not bucket_file.is_dir:
             file_dict[file_name] = {
@@ -125,12 +129,17 @@ def main(argv):
             )
 
     # sync the pvc timestamps up with the new bucket files, as we can't update timestamps on bucket files
+    print("Syncing pvc modified timestamps with object storage")
     bucket_files = minio_client.list_objects(
         wiof_objstor_constants.OBJSTOR_BUCKET,
         recursive=True,
         use_url_encoding_type=False,
     )
     for bucket_file in bucket_files:
+        print(f"file_name: {bucket_file}")
+        if bucket_file.last_modified is None:
+            print(f"file {bucket_file} missing last_modified")
+            continue
         file_name = bucket_file.object_name
         bucket_last_modified = datetime.timestamp(bucket_file.last_modified)
         if file_name in pvc_timestamp_sync_list:
