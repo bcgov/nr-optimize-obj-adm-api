@@ -103,6 +103,54 @@ def try_admin_login(user, password, endpoint):
     return client
 
 
+# Print out bucket details and tags for convenience.
+# Would be good to rebuild this to do a .csv rather than printing to console
+def stash_bucket_tags(buckets):
+    print(
+        "stashing a list of bucket tags"
+    )
+
+    all_tags = []
+    for bucket_name in buckets:
+        bucket = buckets[bucket_name]
+        tags_dict = {}
+        for tag_kvp in bucket["TagSet"]:
+            tags_dict[tag_kvp["Key"]] = tag_kvp["Value"]
+        for tag_key in tags_dict:
+            if tag_key not in all_tags:
+                all_tags.append(tag_key)
+        bucket["TagsDict"] = tags_dict
+
+    row = []
+    rows = []
+
+    # build headers
+    row.append("Bucket_Name")
+    row.append("Bucket_Username")
+    row.append("Created_Date")
+    for tag in all_tags:
+        row.append(tag)
+    rows.append(row)
+
+    # build rows
+    for bucket_name in buckets:
+        bucket = buckets[bucket_name]
+        row = []
+        row.append(bucket_name)
+        row.append(bucket["owner"])
+        row.append(bucket["created"].strftime('%Y-%m-%d'))
+        tags_dict = bucket["TagsDict"]
+        for tag in all_tags:
+            if tag in tags_dict:
+                row.append(tags_dict[tag])
+            else:
+                row.append("None")
+        rows.append(row)
+
+    for row in rows:
+        print(",".join(row))
+
+
 # list the buckets in the Dell appliance based on command line inputs, but make extra requests to get size data for each bucket
 def get_buckets(namespace, client):
     print(
@@ -292,6 +340,9 @@ def main(argv):
         return
 
     buckets_dict = get_buckets(constants.OBJSTOR_MGMT_NAMESPACE, client)
+
+    # The below function will print all bucket tags to console.
+    # stash_bucket_tags(buckets_dict)
 
     # update the postgres database
     update_database(buckets_dict)
