@@ -67,6 +67,7 @@ def main(argv):
     )
     for bucket_file in bucket_files:
         file_name = bucket_file.object_name
+        # Debugging purposes
         # print(f"file_name: {file_name}")
         if bucket_file.last_modified is None:
             print(f"file {bucket_file} missing last_modified")
@@ -136,6 +137,7 @@ def main(argv):
         use_url_encoding_type=False,
     )
     for bucket_file in bucket_files:
+        # Debugging purposes
         # print(f"file_name: {bucket_file}")
         if bucket_file.last_modified is None:
             print(f"file {bucket_file} missing last_modified")
