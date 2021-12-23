@@ -125,9 +125,11 @@ def stash_bucket_tags(buckets):
     rows = []
 
     # build headers
-    row.append("Bucket_Name")
-    row.append("Bucket_Username")
-    row.append("Created_Date")
+    row.append("Bucket Name")
+    row.append("Bucket Username")
+    row.append("Created Date")
+    row.append("Total GB")
+    row.append("Object Count")
     for tag in all_tags:
         row.append(tag)
     rows.append(row)
@@ -139,6 +141,8 @@ def stash_bucket_tags(buckets):
         row.append(bucket_name)
         row.append(bucket["owner"])
         row.append(bucket["created"].strftime('%Y-%m-%d'))
+        row.append(bucket["total_size"])
+        row.append(str(bucket["total_objects"]))
         tags_dict = bucket["TagsDict"]
         for tag in all_tags:
             if tag in tags_dict:
