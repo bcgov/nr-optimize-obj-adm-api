@@ -1,0 +1,4 @@
+python-dotenv==0.18.0
+minio==7.1.0
+s3==3.0.0
+requests>=2.18.4,<3.0

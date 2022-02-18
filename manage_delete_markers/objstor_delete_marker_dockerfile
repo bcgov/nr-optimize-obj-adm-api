@@ -1,0 +1,6 @@
+FROM docker-remote.artifacts.developer.gov.bc.ca/alpine:3.14
+WORKDIR /src
+COPY ["objstor_delete_marker.py", "requirements.txt", "constants.py", "./"]
+RUN apk add --no-cache python3 py3-pip && \
+    pip install -r requirements.txt
+ENTRYPOINT ["python3", "objstor_delete_marker.py"]
