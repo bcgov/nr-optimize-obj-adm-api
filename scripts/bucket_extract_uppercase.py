@@ -38,13 +38,13 @@ def main():
     s3_bucket = s3.Bucket(bucket)
 
     # Check that bucket exists.
-    print(
-        "Bucket {} does not exist.".format(bucket)
-        if s3_bucket.creation_date is None
-        else "Bucket {} exists. \n Parsing object keys for uppercase...\n".format(
-            bucket
+    if s3_bucket.creation_date is None:
+        print("Bucket {} does not exist.".format(bucket))
+        sys.exit()
+    else:
+        print(
+            "Bucket {} exists. \n Parsing object keys for uppercase...\n".format(bucket)
         )
-    )
 
     # parse bucket object keys for files with uppercase letters & write to file
     with open("{}_extract_uppercase.txt".format(bucket), "w") as f:
