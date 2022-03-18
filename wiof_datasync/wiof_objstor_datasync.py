@@ -29,7 +29,7 @@ def copy_to_bucket(minio_client, pvc_directory, file_name):
     minio_client.fput_object(
         wiof_objstor_constants.OBJSTOR_BUCKET,
         file_name,
-        os.path.join(pvc_directory, file_name),
+        os.path.join(pvc_directory, file_name.lower()),
     )
     return
 
@@ -40,9 +40,9 @@ def copy_to_pvc(minio_client, file_name, last_modified, pvc_directory):
     minio_client.fget_object(
         wiof_objstor_constants.OBJSTOR_BUCKET,
         file_name,
-        os.path.join(pvc_directory, file_name),
+        os.path.join(pvc_directory, file_name.lower()),
     )
-    os.utime(os.path.join(pvc_directory, file_name), (last_modified, last_modified))
+    os.utime(os.path.join(pvc_directory, file_name.lower()), (last_modified, last_modified))
 
 
 def main(argv):
