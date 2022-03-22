@@ -14,10 +14,10 @@
             "console": "integratedTerminal"
         },          
         {
-            "name": "Python: Minio Data Sync",
+            "name": "Python: WIOF Data Sync",
             "type": "python",
             "request": "launch",
-            "program": "minio_data_sync.py",
+            "program": "wiof_datasync\\wiof_objstor_datasync.py",
             "args": [],
             "console": "integratedTerminal"
         },          
