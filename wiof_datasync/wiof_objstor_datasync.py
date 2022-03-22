@@ -33,9 +33,9 @@ def copy_to_bucket(minio_client, pvc_directory, file_name):
 
     # upload file, never been run
     minio_client.fput_object(
-        wiof_objstor_constants.S3_BUCKET_NAME,
-        file_name,
-        os.path.join(pvc_directory, file_name.lower()),
+        wiof_objstor_constants.OBJSTOR_BUCKET,
+        file_name.lower(),
+        os.path.join(pvc_directory, file_name),
     )
     return
 
