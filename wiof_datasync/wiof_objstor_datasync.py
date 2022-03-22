@@ -28,8 +28,8 @@ def copy_to_bucket(minio_client, pvc_directory, file_name):
     # upload file, never been run
     minio_client.fput_object(
         wiof_objstor_constants.OBJSTOR_BUCKET,
-        file_name,
-        os.path.join(pvc_directory, file_name.lower()),
+        file_name.lower(),
+        os.path.join(pvc_directory, file_name),
     )
     return
 
