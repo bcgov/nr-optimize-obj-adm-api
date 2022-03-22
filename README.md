@@ -1,4 +1,6 @@
 # nr-optimize-objstor-admin-api
+[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
+[![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](<Redirect-URL>)
 
 ### How to use a Python script to perform URL Sharing from Object Storage
 This will output a pre-signed URL for your object that will allow the user to download it for a pre-determined length of time. 

@@ -29,7 +29,7 @@ def copy_to_bucket(minio_client, pvc_directory, file_name):
     minio_client.fput_object(
         wiof_objstor_constants.OBJSTOR_BUCKET,
         file_name,
-        os.path.join(pvc_directory, file_name),
+        os.path.join(pvc_directory, file_name.lower()),
     )
     return
 
@@ -40,9 +40,9 @@ def copy_to_pvc(minio_client, file_name, last_modified, pvc_directory):
     minio_client.fget_object(
         wiof_objstor_constants.OBJSTOR_BUCKET,
         file_name,
-        os.path.join(pvc_directory, file_name),
+        os.path.join(pvc_directory, file_name.lower()),
     )
-    os.utime(os.path.join(pvc_directory, file_name), (last_modified, last_modified))
+    os.utime(os.path.join(pvc_directory, file_name.lower()), (last_modified, last_modified))
 
 
 def main(argv):
@@ -67,7 +67,8 @@ def main(argv):
     )
     for bucket_file in bucket_files:
         file_name = bucket_file.object_name
-        print(f"file_name: {file_name}")
+        # Debugging purposes
+        # print(f"file_name: {file_name}")
         if bucket_file.last_modified is None:
             print(f"file {bucket_file} missing last_modified")
             continue
@@ -136,7 +137,8 @@ def main(argv):
         use_url_encoding_type=False,
     )
     for bucket_file in bucket_files:
-        print(f"file_name: {bucket_file}")
+        # Debugging purposes
+        # print(f"file_name: {bucket_file}")
         if bucket_file.last_modified is None:
             print(f"file {bucket_file} missing last_modified")
             continue

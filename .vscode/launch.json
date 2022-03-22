@@ -20,6 +20,22 @@
             "program": "wiof_datasync\\wiof_objstor_datasync.py",
             "args": [],
             "console": "integratedTerminal"
+        },          
+        {
+            "name": "Python: WIOF Data Sync",
+            "type": "python",
+            "request": "launch",
+            "program": "wiof_datasync\\wiof_objstor_datasync.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Uppercase",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\bucket_extract_uppercase.py",
+            "args": [],
+            "console": "integratedTerminal"
         }
     ]
 }
