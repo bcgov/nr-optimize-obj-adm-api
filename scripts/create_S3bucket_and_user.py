@@ -1,12 +1,11 @@
 # -------------------------------------------------------------------------------
 # Name:        create_S3bucket_and_user.py
-# Purpose:     login into the S3 DELL management and create buckets and users in a standardize way.
+# Purpose:     login into the S3 DELL management and create buckets using a config file.
 #
-# Author:      MRDOUVIL
+# Author:      PPLATTEN, HHAY, updated from MDOUVILLE's script
 #
-# Created:     16-12-2019
-# Copyright:   (c) MRDOUVIL 2019
-# Licence:     <your licence>
+# Created:     April-2022
+#
 # dependent on https://github.com/EMCECS/python-ecsclient
 # TODO: build envioment with requirements list needs to be deployed before running
 # TODO: parameters and encrypted password settings need to be in runtime env properly
@@ -14,166 +13,48 @@
 
 import random
 import string
-import argparse
 
-from ecsclient.client import Client
-import getpass
-import sys
+import constants
 
-
-def parse_args():
-    print("Number of arguments:", len(sys.argv), "arguments.")
-    print("Argument List:", str(sys.argv))
-
-    syntaxcmd = 'create_s3bucket_and_user.py <command - createuser, createbucket, listuser, listbuckets, listbucketsizes> '
-    syntaxcmd = syntaxcmd + '-u <DELLNamespace_adminuser> -p <DellNamespace_adminpassword> -n <namespace - default is "nrs">'
-
-    if len(sys.argv) < 2:
-        print(syntaxcmd)
-        sys.exit(2)
-
-    parser = argparse.ArgumentParser(description="command line client")
-    parser.set_defaults(funct=argparser_handler)
-
-    parser.add_argument(
-        "-u",
-        dest="user",
-        help="user.  If this argument is not passed it will be requested.",
-        metavar="user",
-        type=str,
-    )
-    parser.add_argument(
-        "-p",
-        dest="password",
-        help="password.  If this argument is not passed it will be requested.",
-        metavar="password",
-        type=str,
-    )
-    parser.add_argument(
-        "-",
-        "--command",
-        dest="command",
-        required=True,
-        help="specify the action/command to run - createuser, createbuckets, listuser, listbuckets, listbucketsizes",
-        metavar="command",
-        type=str,
-    )
-    parser.add_argument(
-        "-r",
-        "--replicationgroup",
-        dest="replicationgroup",
-        default="urn:storageos:ReplicationGroupInfo:4759217e-b060-4abb-a100-6a50686d6cf8:global",
-        required=False,
-        help="replication group with the DELL APplicance (default is 'urn:storageos:ReplicationGroupInfo:4759217e-b060-4abb-a100-6a50686d6cf8:global'",
-        metavar="replication group",
-        type=str,
-    )
-    parser.add_argument(
-        "-ou",
-        "--objectuser",
-        dest="objectuser",
-        required=False,
-        help="Object User to Create if function is set to 'createUser'",
-        metavar="objectuser",
-        type=str,
-    )
-    parser.add_argument(
-        "-n",
-        "--namespace",
-        dest="namespace",
-        default="nrs",
-        required=False,
-        help="namespace to access in object storage (default is 'nrs')",
-        metavar="namespace",
-        type=str,
-    )
-
-    parser.add_argument("--encrypt", dest="encryption_enabled", action="store_true")
-    parser.add_argument("--no-encrypt", dest="encryption_enabled", action="store_false")
-    parser.set_defaults(encryption_enabled=False)
-
-    parser.add_argument(
-        "-e",
-        "--endpoint",
-        dest="endpoint",
-        default="https://mgmt.objectstore.gov.bc.ca:4443",
-        required=False,
-        help="REST Endpoint to access DELL management API (default is 'https://mgmt.objectstore.gov.bc.ca:4443')",
-        metavar="rest admin Endpoint",
-        type=str,
-    )
-
-    args = parser.parse_args()
-    args.funct(args)
-
-
-def argparser_handler(args):
-    command = args.command
-    print("The command to run is: ", command)
-    replicationgroup = args.replicationgroup
-    print("The replication group is: ", replicationgroup)
-    user = args.user
-    password = args.password
-    print("The admin user is: ", user)
-    objectuser = args.objectuser
-    print("The object user is: ", object)
-    namespace = args.namespace
-    print("The namespace is: ", namespace)
-    endpoint = args.endpoint
-    print("The endpoint is: ", endpoint)
-    encryption_enabled = args.encryption_enabled
-
-    if args.command == "createuser":
-        login(user, password)
-        # login to the DELL management console
-        client = adminLogin(user, password, endpoint)
-        createUser(objectuser, namespace, client)
-    if args.command == "createbucket":
-        login(user, password)
-        # login to the DELL management console
-        client = adminLogin(user, password, endpoint)
-        createBucket(encryption_enabled, replicationgroup, namespace, client)
-    if args.command == "listbuckets":
-        login(user, password)
-        # login to the DELL management console
-        client = adminLogin(user, password, endpoint)
-        listBuckets(namespace, client)
-    if args.command == "listbucketsizes":
-        login(user, password)
-        # login to the DELL management console
-        client = adminLogin(user, password, endpoint)
-        listBucketSizes(namespace, client)
-    if args.command == "listusers":
-        login(user, password)
-        # login to the DELL management console
-        client = adminLogin(user, password, endpoint)
-        listUsers(namespace, client)
-
-
-# prompt if user and password is not given in the command line
-def login(user, password):
-    if not user:
-        user = input("User:")
-    if not password:
-        password = getpass.getpass()
-    print("user:", user)
-    print("password:", password)
+import time
+from ecsclient.common.exceptions import ECSClientException
+from ecsclient.client import Client as ESCCLlient
 
 
 # login to the administrative DELL ECS API
-def adminLogin(user, password, endpoint):
-    client = Client(
-        "3",
-        username=user,
-        password=password,
-        token_endpoint=endpoint + "/login",
-        cache_token=False,
-        ecs_endpoint=endpoint,
-    )
+def adminLogin():
 
+    client = ESCCLlient(
+        "3",
+        username=constants.OBJSTOR_ADMIN,
+        password=constants.OBJSTOR_ADMIN_PASS,
+        token_endpoint=constants.OBJSTOR_MGMT_ENDPOINT + "/login",
+        cache_token=False,
+        ecs_endpoint=constants.OBJSTOR_MGMT_ENDPOINT,
+    )
     print("----------LOGGED IN ADMIN USER IS:")
     print(client.user_info.whoami())
     print()
+    return client
+
+
+def try_admin_login():
+    client = None
+    try:
+        client = adminLogin()
+    except ECSClientException:
+        counter = 3
+        while counter > 0:
+            print("Connection to S3 Failed, trying again in 10")
+            time.sleep(10)
+            try:
+                client = adminLogin()
+                counter = 0
+            except ECSClientException:
+                if counter == 1:
+                    print("Connection to S3 Failed, closing")
+                pass
+            counter = counter - 1
     return client
 
 
@@ -185,16 +66,15 @@ def randomString(stringLength=10):
 
 
 # create a user in the Dell appliance based on command line inputs
-def createUser(objectuser, namespace, client):
+def createUser(objectuser, client):
     print("Creating DELL ECS User account")
-    client.object_user.create(objectuser, namespace)
-    print('created user "' + objectuser + '"in namepace - ' + namespace)
+    client.object_user.create(objectuser, constants.OBJSTOR_MGMT_NAMESPACE)
+    print(f"Created user {objectuser}")
 
 
 # create a bucket in the Dell appliance based on command line inputs
-def createBucket(encryption_enabled, replicationgroup, namespace, client):
+def createBucket(bucket_config, client):
     print("Creating DELL ECS Bucket")
-    # bucket_name, replicationgroup='', filesystem_enabled=False, head_type=None, namespace=None, stale_allowed=False,  metadata=None, encryption_enabled=False):
     metadata = [
         {"datatype": "datetime", "name": "CreateTime", "type": "System"},
         {"datatype": "datetime", "name": "LastModified", "type": "System"},
@@ -202,51 +82,60 @@ def createBucket(encryption_enabled, replicationgroup, namespace, client):
         {"datatype": "string", "name": "Owner", "type": "System"},
         {"datatype": "integer", "name": "Size", "type": "System"},
     ]
-    # print(metadata)
 
-    bucketname = randombucketname()
-    print("creating bucket:  " + bucketname)
-    client.bucket.create(
+    bucketname = bucket_config["bucketname"]
+
+    result = client.bucket.create(
         bucketname,
-        replicationgroup,
-        False,
-        None,
-        namespace,
-        False,
+        client.replication_group.list()["data_service_vpool"][0]["id"],
+        bucket_config["filesystem_enabled"],
+        bucket_config["head_type"],
+        constants.OBJSTOR_MGMT_NAMESPACE,
+        bucket_config["stale_enabled"],
         metadata,
-        encryption_enabled,
+        bucket_config["encryption_enabled"]
     )
+    bucket = client.bucket.get(bucketname)
+    client.bucket.set_owner(bucketname,bucket_config["owner"])
+    # client.bucket.set_quota()
+    # client.bucket.set_metadata()
+    # client.bucket.set_retention()?
+
+    print(f"Created bucket: {bucketname}")
+    client.bucket.delete(bucketname)
+    # Still to handle:
+    # bucket = {
+    #     "owner": "nr-skeena-prd",
+    #     "notification-quota": 50,
+    #     "block-quota": 75,
+    #     "tags": {
+    #       "Project": "Skeena Large File Service #7100000",
+    #       "Branch": "Natural Resource Information & Digital Services",
+    #       "Ministry": "LWRS",
+    #       "Data Custodian": "Andy Muma",
+    #       "Data Steward": "Andy Muma"
+    #     }
+    # }
 
 
 # list the buckets in the Dell appliance based on command line inputs
-def listBuckets(namespace, client):
-    print("List of buckets within the " + namespace + " namespace:")
+def bucketExists(bucketname, client):
 
-    bucket = client.bucket.list(namespace)
-    print(bucket)
-
-
-# list the buckets in the Dell appliance based on command line inputs, but make extra requests to get size data for each bucket
-def listBucketSizes(namespace, client):
-    print(
-        "List of buckets within the " + namespace + " namespace, including bucket size:"
-    )
-
-    # Get a list of bucket names. Don't stop at the default of 100 buckets (nrs is at 73 on 2021-05-27)
-    namespaceresponse = client.bucket.list(namespace, limit=1000)
-    bucketlist = namespaceresponse["object_bucket"]
-    for bucket in bucketlist:
-        bucketresponse = client.bucket.getbucketdetails(namespace, bucket["name"])
-        print(bucketresponse)
+    buckets = client.bucket.list(constants.OBJSTOR_MGMT_NAMESPACE)
+    for bucket in buckets["object_bucket"]:
+        if bucket["name"] == bucketname:
+            return True
+    return False
 
 
 # list the users in the Dell appliance based on command line inputs
-def listUsers(namespace, client):
+def userExists(username, client):
     userslist = client.object_user.list()
     users = userslist["blobuser"]
-    print("List of Object users with the " + namespace + " namespace:")
     for user in users:
-        print(user)
+        if user["userid"] == username:
+            return True
+    return False
 
 
 # generate a random bucket name based on length given - standard/default is six
@@ -257,9 +146,50 @@ def randombucketname():
 
 
 def main():
-    pass
+
+    # What the values mean:
+    # filesystem_enabled allows the bucket to be used as a Hadoop HDFS or NFS file system, usually False for us.
+    # head_type is.. False?
+    # encryption_enabled means that the data will be encrypted at rest in the datacenter
+    # stale_enabled means that if the primary datacenter is inaccessible users will be redirected to the backup datacenter
+    # notification-quota notifies OCIO when data consumption exceeds this amount of GB; we haven't ever heard something back from this
+    # block-quota is a cutoff in GB; data consumption cannot be uploaded over this value
+    buckets = [
+        {
+            "bucketname": "peter-bucket-1",
+            "owner": "nr-skeena-prd",
+            "filesystem_enabled": False,
+            "head_type": None,
+            "encryption_enabled": False,
+            "stale_enabled": True,
+            "notification-quota": 50,
+            "block-quota": 75,
+            "tags": {
+                "Project": "Skeena Large File Service #7100000",
+                "Branch": "Natural Resource Information & Digital Services",
+                "Ministry": "LWRS",
+                "Data Custodian": "Andy Muma",
+                "Data Steward": "Andy Muma"
+            }
+        }
+    ]
+
+    client = adminLogin()
+
+    for bucket in buckets:
+        owner = bucket["owner"]
+        if userExists(owner, client):
+            print("Owner already exists")
+        else:
+            createUser(owner, client)
+            print(f"Created {owner}")
+        bucketname = bucket["bucketname"]
+        if bucketExists(bucketname, client):
+            print("Bucket already exists")
+        else:
+            createBucket(bucket, client)
+            print(f"Created {bucketname}")
 
 
 if __name__ == "__main__":
-    parse_args()
     main()
