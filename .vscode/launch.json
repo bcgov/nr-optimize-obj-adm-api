@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [          
         {
-            "name": "Python: Create_bucket_and_user",
+            "name": "Python: Create_buckets",
             "type": "python",
             "request": "launch",
-            "program": "scripts\\create_S3bucket_and_user.py",
+            "program": "scripts\\create_buckets.py",
             "args": [],
             "console": "integratedTerminal"
         },          
