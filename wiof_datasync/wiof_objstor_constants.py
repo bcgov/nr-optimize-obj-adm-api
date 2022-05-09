@@ -11,6 +11,9 @@ OBJSTOR_SECRET_KEY = os.environ["OBJSTOR_SECRET_KEY"]
 OBJSTOR_BUCKET = os.environ["OBJSTOR_BUCKET"]
 OBJSTOR_ENDPOINT = os.environ["OBJSTOR_ENDPOINT"]
 
+ADMIN_EMAIL = os.environ["ADMIN_EMAIL"]
+SMTP_SERVER = os.environ["SMTP_SERVER"]
+
 
 def print_constants():
     print(f"OBJSTOR_ACCESS_KEY: {OBJSTOR_ACCESS_KEY}")

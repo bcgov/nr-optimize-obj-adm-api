@@ -8,15 +8,21 @@
 # Notes: This is a little-tested proof of concept upload/download functionality
 # -------------------------------------------------------------------------------
 
+import datetime as dt
+import os
+import re
+import smtplib
+import socket
 import sys
 import wiof_objstor_constants
-import os
 
 from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from minio import Minio
 from minio.error import S3Error
 
-# update to be the directory for the pod that the PVC is mounted to
+# update to be the directory in the pod that the PVC is mounted to
 pvc_directory = "/etc/datasync"
 # pvc_directory = "J:\\Scripts\\Testing\\Sync_directory"
 
@@ -103,7 +109,13 @@ def main(argv):
 
     # put newer bucket files into pvc, and newer pvc files into bucket, adjust timestamps
     pvc_timestamp_sync_list = []
+    upper_file_names = []
+    upper_pattern = re.compile(r".*[A-Z].*")
     for file_name in file_dict:
+        if upper_pattern.fullmatch(file_name):
+            # if the file name or path has an uppercase character, track and skip it
+            upper_file_names.append(file_name)
+            continue
         file = file_dict[file_name]
         if "pvc_last_modified" in file and "bucket_last_modified" in file:
             # both directories have a copy of the file
@@ -149,6 +161,31 @@ def main(argv):
                 os.path.join(pvc_directory, file_name),
                 (bucket_last_modified, bucket_last_modified),
             )
+
+    if upper_file_names.count > 0 and dt.datetime.now().hour in range(20, 23):
+        # Send email to admin notifying of any uppercase file names in the PVC that weren't sync'd
+        # The script runs every 3h, Only send the email once in the evening
+        msg = MIMEMultipart("related")
+        msg["Subject"] = "Script Report"
+        msg["To"] = wiof_objstor_constants.ADMIN_EMAIL
+        msg["From"] = wiof_objstor_constants.ADMIN_EMAIL
+
+        host_name = socket.gethostname()
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        file_names = ""
+        for upper_file in upper_file_names:
+            file_names += upper_file + "<br>"
+        html = "<html><head></head><body><p>" \
+            + "A scheduled script wiof_objstor_datasync.py has sent an automated report email." \
+            + "<br />Server: " + str(host_name) \
+            + "<br />File Path: " + dir_path + "<br />" \
+            + "The following files in the PVC are uppercase, so were not synchronized with object storage:" \
+            + file_names \
+            + "</p></body></html>"
+        msg.attach(MIMEText(html, "html"))
+        s = smtplib.SMTP(wiof_objstor_constants.SMTP_SERVER)
+        s.sendmail(msg["From"], msg["To"], msg.as_string())
+        s.quit()
 
 
 if __name__ == "__main__":
