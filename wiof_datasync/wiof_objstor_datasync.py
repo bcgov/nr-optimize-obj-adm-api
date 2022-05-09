@@ -162,7 +162,7 @@ def main(argv):
                 (bucket_last_modified, bucket_last_modified),
             )
 
-    if upper_file_names.count > 0 and dt.datetime.now().hour in range(20, 23):
+    if upper_file_names.count() > 0 and dt.datetime.now().hour in range(20, 23):
         # Send email to admin notifying of any uppercase file names in the PVC that weren't sync'd
         # The script runs every 3h, Only send the email once in the evening
         msg = MIMEMultipart("related")
