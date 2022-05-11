@@ -15,6 +15,7 @@ import datetime
 
 import argparse
 import constants
+import pandas as pd
 import sys
 import time
 
@@ -73,8 +74,7 @@ def try_admin_login(user, password, endpoint):
 
 
 # Print out bucket details and tags for convenience.
-# Would be good to rebuild this to do a .csv rather than printing to console
-def stash_bucket_tags(buckets):
+def print_bucket_tags(buckets):
     print(
         "stashing a list of bucket tags"
     )
@@ -124,6 +124,24 @@ def stash_bucket_tags(buckets):
         print(",".join(row))
 
 
+# Save bucket details as csv file
+def save_bucket_details(buckets):
+    # clean up data
+    for bucket_name in buckets:
+        bucket = buckets[bucket_name]
+        del bucket["vpool_id"]
+        bucket["total_size_gb"] = bucket["total_size"]
+        del bucket["total_size"]
+        del bucket["total_size_unit"]
+        del bucket["sample_time"]
+        del bucket["sample_date"]
+        del bucket["month"]
+
+    current_time = datetime.date.today().isoformat()
+    df = pd.DataFrame(buckets).T
+    df.to_excel(f'bucket-tags-{current_time}.xlsx')
+
+
 # list the buckets in the Dell appliance based on command line inputs, but make extra requests to get size data for each bucket
 def get_buckets(namespace, client):
     print(
@@ -137,7 +155,6 @@ def get_buckets(namespace, client):
     sample_date = datetime.date.today()
     sample_month = datetime.datetime.today().strftime('%Y-%m')
     for bucket in bucket_list:
-        bucket_response = client.bucket.get(bucket["name"])
         bucket_response = client.bucket.getbucketdetails(namespace, bucket["name"])
         bucket_response["owner"] = bucket["owner"]
         bucket_response["softquota"] = bucket["softquota"]
@@ -218,7 +235,7 @@ def main(argv):
     buckets_dict = get_buckets(constants.OBJSTOR_MGMT_NAMESPACE, client)
 
     # The below function will print all bucket tags to console.
-    stash_bucket_tags(buckets_dict)
+    save_bucket_details(buckets_dict)
 
 
 if __name__ == "__main__":
