@@ -2,6 +2,14 @@
     "version": "0.2.0",
     "configurations": [          
         {
+            "name": "Python: Export_All_Bucket_Metadata",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\export_all_bucket_metadata.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },            
+        {
             "name": "Python: Create_buckets",
             "type": "python",
             "request": "launch",
