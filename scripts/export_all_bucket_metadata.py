@@ -140,6 +140,7 @@ def save_bucket_details(buckets):
     current_time = datetime.date.today().isoformat()
     df = pd.DataFrame(buckets).T
     df.to_excel(f'bucket-tags-{current_time}.xlsx')
+    print(f'File saved as bucket-tags-{current_time}.xlsx')
 
 
 # list the buckets in the Dell appliance based on command line inputs, but make extra requests to get size data for each bucket
