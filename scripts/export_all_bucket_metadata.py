@@ -178,6 +178,8 @@ def get_buckets(namespace, client):
                     bucket_response["custodian"] = tag["Value"]
                 elif tag["Key"] == "Data Steward":
                     bucket_response["steward"] = tag["Value"]
+                elif tag["Key"] == "Ministry":
+                    bucket_response["ministry"] = tag["Value"]
         bucket_dict[bucket_response["name"]] = bucket_response
     return bucket_dict
 

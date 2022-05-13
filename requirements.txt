@@ -1,3 +1,6 @@
 python-dotenv==0.18.0
 python-ecsclient==1.1.11
 boto3==1.18.15
+flake8==3.9.2
+pandas==1.2.4
+openpyxl==3.0.7
