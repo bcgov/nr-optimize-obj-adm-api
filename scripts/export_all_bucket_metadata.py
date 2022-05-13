@@ -140,6 +140,7 @@ def save_bucket_details(buckets):
     current_time = datetime.date.today().isoformat()
     df = pd.DataFrame(buckets).T
     df.to_excel(f'bucket-tags-{current_time}.xlsx')
+    print(f'File saved as bucket-tags-{current_time}.xlsx')
 
 
 # list the buckets in the Dell appliance based on command line inputs, but make extra requests to get size data for each bucket
@@ -176,6 +177,8 @@ def get_buckets(namespace, client):
                     bucket_response["organization"] = tag["Value"]
                 elif tag["Key"] == "Data Custodian":
                     bucket_response["custodian"] = tag["Value"]
+                elif tag["Key"] == "Credential Holder":
+                    bucket_response["credential holder"] = tag["Value"]
                 elif tag["Key"] == "Data Steward":
                     bucket_response["steward"] = tag["Value"]
                 elif tag["Key"] == "Ministry":
