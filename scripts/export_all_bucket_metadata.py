@@ -177,6 +177,8 @@ def get_buckets(namespace, client):
                     bucket_response["organization"] = tag["Value"]
                 elif tag["Key"] == "Data Custodian":
                     bucket_response["custodian"] = tag["Value"]
+                elif tag["Key"] == "Credential Holder":
+                    bucket_response["credential holder"] = tag["Value"]
                 elif tag["Key"] == "Data Steward":
                     bucket_response["steward"] = tag["Value"]
         bucket_dict[bucket_response["name"]] = bucket_response
