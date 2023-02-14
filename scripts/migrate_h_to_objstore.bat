@@ -1,0 +1,1 @@
+PowerShell -NoProfile -ExecutionPolicy Unrestricted -Command "& '<path to file>\migrate_to_objstore.ps1'"
