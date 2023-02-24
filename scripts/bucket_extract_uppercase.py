@@ -41,7 +41,7 @@ def get_upper_filenames(s3: boto3.session.Session.resource):
         print(f"Bucket {bucket_name} exists. \n Parsing object keys for uppercase...\n")
 
     # This pattern matches any uppercase letters
-    pattern = re.compile('[A-Z]')
+    pattern = re.compile("[A-Z]")
 
     # Add all file names which match the pattern to a collection
     for s3_bucket_object in s3_bucket.objects.all():
@@ -66,7 +66,7 @@ def file_exists_check(s3_client, file_name):
         s3_client.Object(constants.AWS_S3_BUCKET, file_name).load()
         return True
     except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == "404":
+        if e.response["Error"]["Code"] == "404":
             return False
         else:
             # Something else has gone wrong.
@@ -77,7 +77,9 @@ def file_exists_check(s3_client, file_name):
 def make_file_lowercase(s3_client, upper_file_name):
     bucket_name = constants.AWS_S3_BUCKET
     print(f"Lowercasing {upper_file_name}")
-    s3_client.Object(bucket_name, upper_file_name.lower()).copy_from(CopySource=f'{bucket_name}/{upper_file_name}')
+    s3_client.Object(bucket_name, upper_file_name.lower()).copy_from(
+        CopySource=f"{bucket_name}/{upper_file_name}"
+    )
     s3_client.Object(bucket_name, upper_file_name).delete()
 
 
@@ -99,7 +101,7 @@ def main():
     write_list(f"{bucket_name}_extract_uppercase.txt", upper_file_names)
 
     # pattern matches any uppercase letters optionally surrounded by any characters before a /
-    uppercase_folder_pattern = re.compile('.*[A-Z].*/')
+    uppercase_folder_pattern = re.compile(".*[A-Z].*/")
 
     # Check for conflicts in file name or folder name
     conflicted_files = set()
@@ -140,8 +142,8 @@ def main():
     #       In this case folder2 is what I've labelled "rootiest", as it is the folder closest to root which has an uppercase character
 
     # This pattern matches everything up to and including the first folder with an uppercase name
-    # i.e. for folder1/Folder2/Folder3, it matches folder1/Folder2/ 
-    rootiest_folder_pattern = re.compile('^[a-z0-9\-. /]*[A-Z][\w\-. ]*/')
+    # i.e. for folder1/Folder2/Folder3, it matches folder1/Folder2/
+    rootiest_folder_pattern = re.compile("^[a-z0-9\\-. /]*[A-Z][\\w\\-. ]*/")
 
     conflicted_folders = set()
     for conflicted_file in conflicted_folder_files:
@@ -156,14 +158,15 @@ def main():
         if upper_name.lower() in conflicted_folder_files:
             # File would conflict if this and another uppercase file were lowercased
             files_which_conflict.add(upper_name)
+            write_list(f"{bucket_name}_file_conflicts.txt", upper_file_names)
         elif any(folder in upper_name.lower() for folder in conflicted_folders):
             # File is in a folder which has an uppercase character, and the folder would conflict if only some children are made lowercase
             folder_conflict_files.add(upper_name)
+            write_list(f"{bucket_name}_process_after_conflicts.txt", upper_file_names)
         else:
             make_file_lowercase(s3_client, upper_name)
-
-    write_list(f"{bucket_name}_file_conflicts.txt", upper_file_names)
-    write_list(f"{bucket_name}_process_after_conflicts.txt", upper_file_names)
+    # write_list(f"{bucket_name}_file_conflicts.txt", upper_file_names)
+    # write_list(f"{bucket_name}_process_after_conflicts.txt", upper_file_names)
 
 
 if __name__ == "__main__":
