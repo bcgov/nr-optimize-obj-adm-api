@@ -1,0 +1,1 @@
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '%cd%\migrate_to_geodrive.ps1'"
