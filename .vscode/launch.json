@@ -2,6 +2,14 @@
     "version": "0.2.0",
     "configurations": [          
         {
+            "name": "Python: set_s3_bucket_cors",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\set_s3_bucket_cors.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: Export_All_Bucket_Metadata",
             "type": "python",
             "request": "launch",
