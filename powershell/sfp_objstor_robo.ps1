@@ -25,7 +25,12 @@
 #   - RootOrigin is the SFP share, e.g. \\sfp.idir.bcgov\S161\S6202\
 #   - RootDestination is the GeoDrive share, e.g. \\objectstore.nrs.bcgov\nrs-iit\S6202\
 # Powershell usage:  ./sfp_objstor_robo.ps1 -RootOrigin <Origin Path> -RootDestination <Destination Path>
-# example: powershell ./sfp_objstor_robo.ps1 -RootOrigin "\\sfp.idir.bcgov\S161\S6202\Mines Operations\Regional Operations\File Digitization Project - Pilot" -RootDestination "\\objectstore.nrs.bcgov\nrs-iit\icacls_testing\"
+# example: powershell ./sfp_objstor_robo.ps1 -RootOrigin "Z:\" -RootDestination "H:\GeoDriveCache\remipr\object-storage\"
+# 
+# The script can also be run with the text output dumped to a text file:
+# example: powershell ./sfp_objstor_robo.ps1 -RootOrigin "Z:\" -RootDestination "H:\GeoDriveCache\remipr\object-storage\" *> "C:\Users\$($env:USERNAME)\historic_regional_mine_records.txt"
+# The output text file can be read as it is written to using a seperate powershell window to monitor progress:
+# example: Get-Content "C:\Users\$($env:USERNAME)\historic_regional_mine_records.txt" -Wait
 #
 # Authors:      PPLATTEN, HHAY
 #
@@ -34,13 +39,10 @@
 # Licence:     Open
 # -------------------------------------------------------------------------------
 
-# param (
-#    [Parameter(Mandatory=$true)][string]$RootOrigin, # copy from location
-#    [Parameter(Mandatory=$true)][string]$RootDestination # to location
-# )
-
-$RootOrigin = "Z:\!RUSH\"
-$RootDestination = "E:\GeoDriveCache\nrs-iit\icacls_testing\!RUSH\"
+param (
+   [Parameter(Mandatory=$true)][string]$RootOrigin, # copy from location
+   [Parameter(Mandatory=$true)][string]$RootDestination # to location
+)
 
 Write-Host "RootOrigin: $($RootOrigin)"
 Write-Host "RootDestination: $($RootDestination)"
@@ -93,7 +95,7 @@ ForEach ($FolderPath in $AllFolderPaths) {
         $Output += New-Object -TypeName PSObject -Property $Properties # saves all the properties into an array
     }    
     $Owner = New-Object -TypeName System.Security.Principal.NTAccount -ArgumentList $OriginAcl.Owner;
-    # $DestinationAcl.SetOwner($Owner)
+    $DestinationAcl.SetOwner($Owner)
     Set-Acl -Path $Destination -AclObject $DestinationAcl
     
 }
@@ -128,7 +130,7 @@ ForEach ($FolderPath in $AllFolderPaths) {
             $Output += New-Object -TypeName PSObject -Property $Properties # saves all the properties into an array
         }
         $Owner = New-Object -TypeName System.Security.Principal.NTAccount -ArgumentList $OriginAcl.Owner;
-        # $DestinationAcl.SetOwner($Owner)
+        $DestinationAcl.SetOwner($Owner)
         Set-Acl -Path $Destination -AclObject $DestinationAcl
     }
 }
