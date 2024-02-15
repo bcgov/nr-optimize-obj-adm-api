@@ -1,6 +1,16 @@
 {
     "version": "0.2.0",
-    "configurations": [          
+    "configurations": [                
+        {
+            "name": "PS: sfp_objstor_robo",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceRoot}\\powershell\\sfp_objstor_robo.ps1",
+            "args": [
+                "-RootOrigin \"\\\\sfp.idir.bcgov\\S161\\S6202\\Mines Operations\\Regional Operations\\File Digitization Project - Pilot\\0400828\" -RootDestination \"\\\\objectstore.nrs.bcgov\\nrs-iit\\icacls_testing\\0400828\""
+            ],
+            "cwd": "${workspaceRoot}"
+        },      
         {
             "name": "Python: set_s3_bucket_cors",
             "type": "python",
