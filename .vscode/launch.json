@@ -1,6 +1,14 @@
 {
     "version": "0.2.0",
-    "configurations": [                
+    "configurations": [  
+        {
+            "name": "Python: delete bucket versions",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\delete_bucket_versions.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },              
         {
             "name": "PS: sfp_objstor_robo",
             "type": "PowerShell",
