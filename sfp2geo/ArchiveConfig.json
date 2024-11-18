@@ -1,0 +1,15 @@
+{
+    "DestinationPath": "c:\\GeoDrive",
+    "FileAgeInDays": 1825,
+    "ExcludePatterns": ["*_HR", "*.tmp", ".DS_Store"],
+    "EnableEmailNotifications": true,
+    "AdminEmail": "admin@example.com",
+    "PerDirectoryLogFileName": "Readme - Record of Migrated Files.csv",
+    "GeoDriveAuditLogPath": "c:\\GeoDrive\\Logs\\geodrive_archive_log.csv",
+    "LogFilePath": "c:\\Development\\Logs\\ArchiveScriptOutput.log",
+    "EmailSettings": {
+        "SmtpServer": "127.0.0.1",
+        "From": "noreply@example.com",
+        "Subject": "SFP to GeoDrive Archive Script Report"
+    }
+}
