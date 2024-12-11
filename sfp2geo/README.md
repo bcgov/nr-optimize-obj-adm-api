@@ -63,26 +63,33 @@ This JSON file contains the global configuration settings for the script.
 **Sample `ArchiveConfig.json`:**
 
 <pre><code>{
-    "DestinationPath": "C:\\Archive",
-    "AdminEmail": "admin@example.com",
+    "DestinationPath": "E:\\GeoDriveCache\\sfptogeodrive_test",
+    "ObjectStorePathPrefix": "\\\\objectstore2.nrs.bcgov\\S40004",
+    "HelpPageURL": "http:\\\\example.com\\help.html",
+    "FileAgeInDays": 912,
+    "ExcludePatterns": ["*_HR", "*.tmp", "*Readme - Record of Migrated Files*"],
     "EnableEmailNotifications": true,
-    "PerDirectoryLogFileName": "ArchiveInfo.csv",
-    "GeoDriveAuditLogPath": "C:\\Logs\\Archive_log.csv",
-    "FileAgeInDays": 1825,
-    "ExcludePatterns": ["*_HR*", "*.tmp"],
+    "AdminEmail": [
+        "james.gagan@gov.bc.ca",
+        "peter.platten@gov.bc.ca"
+    ],
+    "PerDirectoryLogFileName": "Readme - Record of Migrated Files.csv",
+    "GeoDriveAuditLogPath": "E:\\LogFiles\\SFPToGeoDrive\\geodrive_archive_log.csv",
+    "LogFilePath": "E:\\LogFiles\\SFPToGeoDrive\\ArchiveScriptOutput.log",
     "EmailSettings": {
         "SmtpServer": "smtp.nrs.gov.bc.ca",
-        "From": "noreply@example.com",
-        "Subject": "Archive Script Report"
-    },
-    "LogFilePath": "C:\\Logs\\ArchiveScriptOutput.log"
+        "From": "noreply-sfp-to-geodrive@gov.bc.ca",
+        "Subject": "SFP to GeoDrive Archive Script Report"
+    }
 }
 </code></pre>
 
 **Configuration Parameters:**
 
 - **DestinationPath**: The root directory where archived files will be stored.
-- **AdminEmail**: Email address of the administrator to receive notifications.
+- **ObjectStorePathPrefix**: Replacement string used in CSV files for users to map drive.
+- **HelpPageURL**: Used in CSV for users to find help.
+- **AdminEmail**: Array of email addresses of the administrator(s) to receive notifications.
 - **EnableEmailNotifications**: Set to `true` to enable email notifications, `false` to disable.
 - **PerDirectoryLogFileName**: Name of the per-directory log file generated in each source directory.
 - **GeoDriveAuditLogPath**: Path to the central audit log file.
