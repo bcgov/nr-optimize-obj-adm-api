@@ -1,15 +1,20 @@
 {
-    "DestinationPath": "c:\\GeoDrive",
-    "FileAgeInDays": 1825,
-    "ExcludePatterns": ["*_HR", "*.tmp", ".DS_Store"],
+    "DestinationPath": "E:\\GeoDriveCache\\sfptogeodrive_test",
+    "ObjectStorePathPrefix": "\\\\objectstore2.nrs.bcgov\\S40004",
+    "HelpPageURL": "http:\\\\example.com\\help.html",
+    "FileAgeInDays": 912,
+    "ExcludePatterns": ["*_HR", "*.tmp", "*Readme - Record of Migrated Files*"],
     "EnableEmailNotifications": true,
-    "AdminEmail": "admin@example.com",
+    "AdminEmail": [
+        "james.gagan@gov.bc.ca",
+        "peter.platten@gov.bc.ca"
+    ],
     "PerDirectoryLogFileName": "Readme - Record of Migrated Files.csv",
-    "GeoDriveAuditLogPath": "c:\\GeoDrive\\Logs\\geodrive_archive_log.csv",
-    "LogFilePath": "c:\\Development\\Logs\\ArchiveScriptOutput.log",
+    "GeoDriveAuditLogPath": "E:\\LogFiles\\SFPToGeoDrive\\geodrive_archive_log.csv",
+    "LogFilePath": "E:\\LogFiles\\SFPToGeoDrive\\ArchiveScriptOutput.log",
     "EmailSettings": {
-        "SmtpServer": "127.0.0.1",
-        "From": "noreply@example.com",
+        "SmtpServer": "smtp.nrs.gov.bc.ca",
+        "From": "noreply-sfp-to-geodrive@gov.bc.ca",
         "Subject": "SFP to GeoDrive Archive Script Report"
     }
 }
