@@ -248,7 +248,7 @@ foreach ($entry in $sourceList) {
                 ',,,'
                 "You can create a convenient link to this archive by mapping a network location using the following instructions:,$helpURL,"
                 "Share Address:,$objectStorePathPrefix,"
-                "Contact $perDirectoryLogContactEmail if you require access to these files.,,"
+                "Contact $perDirectoryLogContactEmail for questions or access.,,"
                 ',,,'
             )
 
