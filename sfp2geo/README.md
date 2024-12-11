@@ -45,7 +45,7 @@ This script automates the archival of files that have not been accessed for a sp
 - **Robocopy**: Should be available (built into Windows)
 - **SMTP Server**: For email notifications (if enabled)
 - **Permissions**: The user running the script must have read/write permissions on source and destination directories and permission to send emails via the SMTP server.
-- **Long Path Support**: Long path support must be enabled on the server to handle lenghty file paths. See [Long Paths Support](https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry#enable-long-paths-in-windows-10-version-1607-and-later)
+- **Long Path Support**: Long path support must be enabled on the server to handle potentially lengthy file paths. See [Long Paths Support](https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry#enable-long-paths-in-windows-10-version-1607-and-later)
 
 ---
 
