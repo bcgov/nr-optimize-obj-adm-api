@@ -223,7 +223,7 @@ foreach ($entry in $sourceList) {
 
                 #create a user-friendly file path - need to match \S104 format
                 $newDest = $destItemPath -replace '^(.*?)(?=[A-Za-z]\d{3})', $objectStorePathPrefix
-                Write-Log "NEW LOCATION: $newDest"
+                #Write-Log "NEW LOCATION: $newDest"
 
                 $directoryLogs[$parentDirectory] += [PSCustomObject]@{
                     LastAccessed = $lastAccessed.ToString('yyyy-MM-dd')
@@ -249,7 +249,7 @@ foreach ($entry in $sourceList) {
                 ',,,'
                 "You can create a convenient link to this archive by mapping a network location using the following instructions:,$helpURL,"
                 "Share Address:,$objectStorePathPrefix,"
-                "Contact $perDirectoryLogContactEmail if you require access to these files.,,"
+                "Contact $perDirectoryLogContactEmail for questions or access.,,"
                 ',,,'
             )
 
