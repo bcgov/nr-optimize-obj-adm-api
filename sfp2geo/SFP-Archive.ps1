@@ -221,8 +221,9 @@ foreach ($entry in $sourceList) {
                     $directoryLogs[$parentDirectory] = @()
                 }
 
-                $newDest =  $destItemPath -replace '^(.*?\\S40004)', $objectStorePathPrefix
-                #Write-Log "NEW LOCATION: $newDest"
+                #create a user-friendly file path - need to match \S104 format
+                $newDest = $destItemPath -replace '^(.*?)(?=[A-Za-z]\d{3})', $objectStorePathPrefix
+                Write-Log "NEW LOCATION: $newDest"
 
                 $directoryLogs[$parentDirectory] += [PSCustomObject]@{
                     LastAccessed = $lastAccessed.ToString('yyyy-MM-dd')
@@ -248,7 +249,7 @@ foreach ($entry in $sourceList) {
                 ',,,'
                 "You can create a convenient link to this archive by mapping a network location using the following instructions:,$helpURL,"
                 "Share Address:,$objectStorePathPrefix,"
-                "Contact $perDirectoryLogContactEmail for questions or access.,,"
+                "Contact $perDirectoryLogContactEmail if you require access to these files.,,"
                 ',,,'
             )
 
@@ -295,3 +296,4 @@ if ($changesLog.Count -gt 0) {
 } else {
     Send-AdminEmail -Subject $emailSettings.Subject -Body "No files were archived during this run."
 }
+ 
