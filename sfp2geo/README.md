@@ -64,7 +64,7 @@ This JSON file contains the global configuration settings for the script.
 
 <pre><code>{
     "DestinationPath": "E:\\GeoDriveCache\\sfptogeodrive_test",
-    "ObjectStorePathPrefix": "\\\\objectstore2.nrs.bcgov\\S40004",
+    "ObjectStorePathPrefix": "\\\\objectstore2.nrs.bcgov\\",
     "HelpPageURL": "http:\\\\example.com\\help.html",
     "FileAgeInDays": 912,
     "ExcludePatterns": ["*_HR", "*.tmp", "*Readme - Record of Migrated Files*"],
