@@ -1,12 +1,12 @@
 import os
 from minio import Minio
 
-AWS_SERVER_PUBLIC_KEY = os.environ.get("AWS_ACCESS_KEY_ID")
-AWS_SERVER_SECRET_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_ACCESS_KEY = os.environ.get("ACCESS_KEY")
+AWS_SERVER_SECRET_KEY = os.environ.get("SECRET_KEY")
 
 minioClient = Minio(
     endpoint="nrs.objectstore.gov.bc.ca",
-    access_key=AWS_SERVER_PUBLIC_KEY,
+    access_key=AWS_ACCESS_KEY,
     secret_key=AWS_SERVER_SECRET_KEY,
     region="US",
 )

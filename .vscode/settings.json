@@ -9,6 +9,7 @@
     "python.pythonPath": "${workspaceFolder}/ve/Scripts/python.exe",
     "python.analysis.extraPaths": [
         "ve/lib",
-        "../ve/lib"
+        "../ve/lib",
+        "../../ve/lib"
     ]
 }

@@ -2,8 +2,8 @@
 # Name:        create_presigned_url_for_s3_objects.py
 # Purpose:     This script returns an URL that provides access to an S3 object for a
 #              pre-determined amount of time (expiration)
-#              1.) looks for env vars for OBJSTOR_PUBLIC_ENDPOINT, AWS_ACCESS_KEY_ID
-#                  and AWS_SECRET_ACCESS_KEY
+#              1.) looks for env vars for OBJSTOR_PUBLIC_ENDPOINT, ACCESS_KEY
+#                  and SECRET_KEY
 #              2.) looks for the bucket name as a parameter with a default
 #              3.) looks for the object and expiration time as a command line config
 #
@@ -69,8 +69,8 @@ expiration = args.expiration
 bucketname = "nrs-iit"
 
 # this script requires access to secret/secure information store as environment variables that are picked up at runtime
-AWS_SERVER_PUBLIC_KEY = (
-    constants.AWS_SERVER_PUBLIC_KEY
+AWS_ACCESS_KEY = (
+    constants.AWS_ACCESS_KEY
 )  # access key for s3 object storage
 AWS_SERVER_SECRET_KEY = (
     constants.AWS_SERVER_SECRET_KEY
@@ -84,7 +84,7 @@ OBJSTOR_PUBLIC_ENDPOINT = (
 s3 = boto3.resource(
     "s3",
     endpoint_url=OBJSTOR_PUBLIC_ENDPOINT,
-    aws_access_key_id=AWS_SERVER_PUBLIC_KEY,
+    aws_access_key_id=AWS_ACCESS_KEY,
     aws_secret_access_key=AWS_SERVER_SECRET_KEY,
 )
 
@@ -97,15 +97,15 @@ def create_presigned_url(
 ):
 
     # Generate a presigned URL for the S3 object
-    s3_client = boto3.client(
+    boto_client = boto3.client(
         "s3",
         endpoint_url=OBJSTOR_PUBLIC_ENDPOINT,
-        aws_access_key_id=AWS_SERVER_PUBLIC_KEY,
+        aws_access_key_id=AWS_ACCESS_KEY,
         aws_secret_access_key=AWS_SERVER_SECRET_KEY,
     )
 
     try:
-        response = s3_client.generate_presigned_url(
+        response = boto_client.generate_presigned_url(
             "get_object",
             Params={"Bucket": bucket_name, "Key": object_name},
             ExpiresIn=expiration,

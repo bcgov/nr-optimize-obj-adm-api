@@ -23,28 +23,33 @@
 # import python libraries
 from time import sleep
 import boto3
+from botocore.config import Config as botocoreConfig
 import constants
 
 
 while True:
     # create a client with S3, the access key, secret key, and public endpoint.
-    s3_client = boto3.client(
+    botoconfig = botocoreConfig(
+        s3 = {"payload_signing_enabled": True}
+    )
+    boto_client = boto3.client(
         "s3",
-        aws_access_key_id=constants.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=constants.AWS_SECRET_ACCESS_KEY,
-        endpoint_url=constants.AWS_S3_ENDPOINT,
+        aws_access_key_id=constants.ACCESS_KEY,
+        aws_secret_access_key=constants.SECRET_KEY,
+        endpoint_url=constants.S3_ENDPOINT,
+        config=botoconfig
     )
 
-    bucket = constants.AWS_S3_BUCKET
+    bucket = constants.S3_BUCKET_NAME
 
     # placeholder list for the filenames
     filenames = []
 
     # get a list of bucket file names
-    def get_filenames(s3_client):
+    def get_filenames(boto_client):
 
         # get first 1000 objects
-        result = s3_client.list_object_versions(Bucket=bucket)
+        result = boto_client.list_object_versions(Bucket=bucket)
         # put all objects into a dictionary, with the value as a counter
         keyCount = {}
         for item in result["Versions"]:
@@ -57,7 +62,7 @@ while True:
         continuationToken = result["NextKeyMarker"] if "NextKeyMarker" in result else None
         while continuationToken:   
             print(continuationToken)   
-            result = s3_client.list_object_versions(Bucket=bucket,KeyMarker=continuationToken)
+            result = boto_client.list_object_versions(Bucket=bucket,KeyMarker=continuationToken)
             if "Versions" in result:
                 for item in result["Versions"]:
                     if item["Key"] not in keyCount:
@@ -72,7 +77,7 @@ while True:
             continuationToken = result["NextKeyMarker"] if "NextKeyMarker" in result else None
         return keyCount
 
-    list_file_names = get_filenames(s3_client)
+    list_file_names = get_filenames(boto_client)
 
     # set a maximum amount of versions for each file
     maximum_versions = 300
@@ -96,7 +101,7 @@ while True:
         # for each object with over maximum_versions
         for line in list_file_names:
             # get all versions of that object
-            result = s3_client.list_object_versions(Bucket=bucket,Prefix=line)
+            result = boto_client.list_object_versions(Bucket=bucket,Prefix=line)
             delete_objects=[]
             counter = 0
             for item in result["Versions"]:
@@ -108,7 +113,7 @@ while True:
                 delete_objects.append({"Key":line,"VersionId":item["VersionId"]})
             print(f"Deleting {len(delete_objects)} from {line}")
             # delete unwanted versions
-            result = s3_client.delete_objects(Bucket=bucket,Delete={'Objects': delete_objects})
+            result = boto_client.delete_objects(Bucket=bucket,Delete={'Objects': delete_objects},ChecksumAlgorithm='SHA256')
             print(f"Deleted {len(result['Deleted'])} from {line}")
     print("Sleeping...")
     sleep(600)

@@ -2,13 +2,11 @@
 # Name:        create_S3bucket_and_user.py
 # Purpose:     login into the S3 DELL management and create buckets using a config file.
 #
-# Author:      PPLATTEN, HHAY, updated from MDOUVILLE's script
+# Author:      PPLATTEN, HHAY
 #
 # Created:     April-2022
 #
-# dependent on https://github.com/EMCECS/python-ecsclient
-# TODO: build envioment with requirements list needs to be deployed before running
-# TODO: parameters and encrypted password settings need to be in runtime env properly
+# WORK IN PROGRESS - SCRIPT DOES NOT WORK YET
 # -------------------------------------------------------------------------------
 
 import random
@@ -20,9 +18,14 @@ import time
 from ecsclient.common.exceptions import ECSClientException
 from ecsclient.client import Client as ECSCLlient
 
+from minio import Minio
+from minio.error import S3Error
+
+from boto3 import client as boto_s3_client
+
 
 # login to the administrative DELL ECS API
-def admin_login():
+def ecs_admin_login():
 
     client = ECSCLlient(
         "3",
@@ -37,18 +40,18 @@ def admin_login():
     print()
     return client
 
-
-def try_admin_login():
+# try logging into the administrative DELL ECS API multiple times
+def try_ecs_client_login():
     client = None
     try:
-        client = admin_login()
+        client = ecs_admin_login()
     except ECSClientException:
         counter = 3
         while counter > 0:
             print("Connection to S3 Failed, trying again in 10")
             time.sleep(10)
             try:
-                client = admin_login()
+                client = ecs_admin_login()
                 counter = 0
             except ECSClientException:
                 if counter == 1:
@@ -66,14 +69,14 @@ def random_string(stringLength=10):
 
 
 # create a user in the Dell appliance based on command line inputs
-def create_user(objectuser, client):
+def ecs_create_user(objectuser, client):
     print("Creating DELL ECS User account")
     client.object_user.create(objectuser, constants.OBJSTOR_MGMT_NAMESPACE)
     print(f"Created user {objectuser}")
 
 
 # create a bucket in the Dell appliance based on command line inputs
-def create_bucket(bucket_config, client):
+def ecs_create_bucket(bucket_config, client):
     print("Creating DELL ECS Bucket")
     metadata = [
         {"datatype": "datetime", "name": "CreateTime", "type": "System"},
@@ -85,7 +88,7 @@ def create_bucket(bucket_config, client):
 
     bucketname = bucket_config["bucketname"]
 
-    result = client.bucket.create(
+    client.bucket.create(
         bucketname,
         client.replication_group.list()["data_service_vpool"][0]["id"],
         bucket_config["filesystem_enabled"],
@@ -96,14 +99,15 @@ def create_bucket(bucket_config, client):
         bucket_config["encryption_enabled"]
     )
     bucket = client.bucket.get(bucketname)
-    client.bucket.set_owner(constants.OBJSTOR_MGMT_NAMESPACE, bucketname, bucket_config["owner"])
+    # Invalid permissions error for set owner
+    # client.bucket.set_owner(constants.OBJSTOR_MGMT_NAMESPACE, bucketname, bucket_config["owner"])
     # client.bucket.set_quota()
     # client.bucket.set_metadata()
     # client.bucket.set_retention()?
 
     print(f"Created bucket: {bucketname}")
-    client.bucket.delete(bucketname)
-    # Still to handle:
+
+    # Does not handle these attributes:
     # bucket = {
     #     "owner": "nr-skeena-prd",
     #     "notification-quota": 50,
@@ -118,18 +122,8 @@ def create_bucket(bucket_config, client):
     # }
 
 
-# list the buckets in the Dell appliance based on command line inputs
-def bucket_exists(bucketname, client):
-
-    buckets = client.bucket.list(constants.OBJSTOR_MGMT_NAMESPACE)
-    for bucket in buckets["object_bucket"]:
-        if bucket["name"] == bucketname:
-            return True
-    return False
-
-
-# list the users in the Dell appliance based on command line inputs
-def user_exists(username, client):
+# true if user exists
+def ecs_user_exists(username, client):
     userslist = client.object_user.list()
     users = userslist["blobuser"]
     for user in users:
@@ -137,7 +131,16 @@ def user_exists(username, client):
             return True
     return False
 
-
+# true if bucket exists
+def ecs_bucket_exists(bucketname, ecs_client):
+    try:
+        bucket = ecs_client.bucket.get(bucketname)
+    except:
+        # TODO - Pin down the exact exception type
+        return False
+    if bucket["name"] == bucketname:
+        return True
+    
 # generate a random bucket name based on length given - standard/default is six
 def random_bucket_name():
     randomname = random_string(6)
@@ -154,42 +157,95 @@ def main():
     # stale_enabled means that if the primary datacenter is inaccessible users will be redirected to the backup datacenter
     # notification-quota notifies OCIO when data consumption exceeds this amount of GB; we haven't ever heard something back from this
     # block-quota is a cutoff in GB; data consumption cannot be uploaded over this value
-    buckets = [
+    buckets_cfg = [
         {
-            "bucketname": "peter-bucket-1",
-            "owner": "nr-skeena-prd",
+            "bucketname": "peterdevbucket2",
+            "owner": "nr-peterdev-dev",
             "filesystem_enabled": False,
             "head_type": None,
             "encryption_enabled": False,
             "stale_enabled": True,
-            "notification-quota": 50,
-            "block-quota": 75,
+            # "notification-quota": 50,
+            # "block-quota": 75,
             "tags": {
-                "Project": "Skeena Large File Service #7100000",
+                "Project": "PeterDevProject",
                 "Branch": "Natural Resource Information & Digital Services",
-                "Ministry": "LWRS",
-                "Data Custodian": "Andy Muma",
-                "Data Steward": "Andy Muma"
+                "Ministry": "WLRS",
+                "Data Custodian": "Peter.PlattenCustodian@gov.bc.ca",
+                "Data Steward": "Heather.HaySteward@gov.bc.ca"
             }
         }
     ]
-
-    client = try_admin_login()
-
-    for bucket in buckets:
-        owner = bucket["owner"]
-        if user_exists(owner, client):
+ 
+    # Create users with ECS Client, because minio client can't
+    ecs_client = try_ecs_client_login()
+    boto_client = boto_s3_client(
+        "s3",
+        aws_access_key_id=constants.ACCESS_KEY,
+        aws_secret_access_key=constants.SECRET_KEY,
+        endpoint_url=constants.S3_ENDPOINT
+    )
+    for bucket_cfg in buckets_cfg:
+        owner = bucket_cfg["owner"]
+        print(f"Creating {bucket_cfg["bucketname"]}")
+        if ecs_user_exists(owner, ecs_client):
             print("Owner already exists")
         else:
-            create_user(owner, client)
+            ecs_create_user(owner, ecs_client)
             print(f"Created {owner}")
-        bucketname = bucket["bucketname"]
-        if bucket_exists(bucketname, client):
+        # userinfo = ecs_client.object_user.get(owner)
+        bucket_name = bucket_cfg["bucketname"]
+        if ecs_bucket_exists(bucket_name, ecs_client):
             print("Bucket already exists")
         else:
-            create_bucket(bucket, client)
-            print(f"Created {bucketname}")
+            ecs_create_bucket(bucket_cfg, ecs_client)
+        result = boto_client.get_bucket_acl(Bucket=bucket_cfg["bucketname"])
+        default_controls = boto_client.get_bucket_ownership_controls(Bucket=bucket_name,ExpectedBucketOwner=constants.OBJSTOR_ADMIN)
+        response = boto_client.set_bucket_ownership_controls(default_controls)
+           
 
+
+
+    # Create buckets also uses minio_client for some operations not available in ECS Client
+    minio_client = Minio(
+        endpoint=constants.OBJSTOR_ENDPOINT,
+        access_key=constants.ACCESS_KEY,
+        secret_key=constants.SECRET_KEY,
+        region="US",
+    )
+
+    for bucket_cfg in buckets_cfg:
+        bucket_name = bucket_cfg["bucketname"]
+        if minio_client.bucket_exists(bucket_name):
+            print("(minio) Bucket already exists")
+        else:
+            ecs_create_bucket(bucket_cfg, ecs_client)
+            print(f"Created {bucket_name}")
+
+            # ecs_create_bucket does not handle these attributes:
+            # bucket = {
+            #     "owner": "nr-skeena-prd",
+            #     "notification-quota": 50,
+            #     "block-quota": 75,
+            #     "tags": {
+            #       "Project": "Skeena Large File Service #7100000",
+            #       "Branch": "Natural Resource Information & Digital Services",
+            #       "Ministry": "LWRS",
+            #       "Data Custodian": "Andy Muma",
+            #       "Data Steward": "Andy Muma"
+            #     }
+            # }
+            # Try using minio!
+
+        for bucket in buckets_cfg:
+            print(bucket.name)
+        tags = {}
+        for tag in bucket_cfg["tags"]:
+            tags[tag] = bucket_cfg["tags"][tag]
+        minio_client.set_bucket_tags(bucket_name, tags)
+        print(f"Created {bucket_name} with minio")
+
+    # todo : export results for sharing
 
 if __name__ == "__main__":
     main()

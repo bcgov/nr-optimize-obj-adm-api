@@ -21,26 +21,26 @@ spec:
                 - name: datasync
                   mountPath: /etc/datasync
               env:
-                - name: OBJSTOR_ACCESS_KEY
+                - name: ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
                       name: objstor-datasync-test
-                      key: OBJSTOR_ACCESS_KEY
-                - name: OBJSTOR_BUCKET
+                      key: ACCESS_KEY
+                - name: S3_BUCKET_NAME
                   valueFrom:
                     secretKeyRef:
                       name: objstor-datasync-test
-                      key: OBJSTOR_BUCKET
+                      key: S3_BUCKET_NAME
                 - name: OBJSTOR_ENDPOINT
                   valueFrom:
                     secretKeyRef:
                       name: objstor-datasync-test
                       key: OBJSTOR_ENDPOINT
-                - name: OBJSTOR_SECRET_KEY
+                - name: SECRET_KEY
                   valueFrom:
                     secretKeyRef:
                       name: objstor-datasync-test
-                      key: OBJSTOR_SECRET_KEY
+                      key: SECRET_KEY
           restartPolicy: OnFailure
           failedJobsHistoryLimit: 3
           successfulJobsHistoryLimit: 3

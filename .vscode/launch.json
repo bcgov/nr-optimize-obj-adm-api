@@ -5,7 +5,7 @@
             "name": "Python: delete bucket versions",
             "type": "python",
             "request": "launch",
-            "program": "scripts\\delete_bucket_versions.py",
+            "program": "bucket_management\\delete_bucket_versions.py",
             "args": [],
             "console": "integratedTerminal"
         },              
@@ -23,7 +23,7 @@
             "name": "Python: set_s3_bucket_cors",
             "type": "python",
             "request": "launch",
-            "program": "scripts\\set_s3_bucket_cors.py",
+            "program": "bucket_management\\set_s3_bucket_cors.py",
             "args": [],
             "console": "integratedTerminal"
         },
@@ -31,7 +31,7 @@
             "name": "Python: Export_All_Bucket_Metadata",
             "type": "python",
             "request": "launch",
-            "program": "scripts\\export_all_bucket_metadata.py",
+            "program": "bucket_management\\export_all_bucket_metadata.py",
             "args": [],
             "console": "integratedTerminal"
         },            
@@ -39,7 +39,7 @@
             "name": "Python: Create_buckets",
             "type": "python",
             "request": "launch",
-            "program": "scripts\\create_buckets.py",
+            "program": "bucket_management\\create_buckets.py",
             "args": [],
             "console": "integratedTerminal"
         },          
@@ -63,9 +63,10 @@
             "name": "Python: Uppercase",
             "type": "python",
             "request": "launch",
-            "program": "scripts\\bucket_extract_uppercase.py",
+            "program": "bucket_management\\bucket_extract_uppercase.py",
             "args": [],
             "console": "integratedTerminal"
         }
-    ]
+    ],
+    "justMyCode":false
 }

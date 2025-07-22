@@ -33,7 +33,7 @@ def copy_to_bucket(minio_client, pvc_directory, file_name):
 
     # upload file, never been run
     minio_client.fput_object(
-        wiof_objstor_constants.OBJSTOR_BUCKET,
+        wiof_objstor_constants.S3_BUCKET_NAME,
         file_name,
         os.path.join(pvc_directory, file_name.lower()),
     )
@@ -44,7 +44,7 @@ def copy_to_bucket(minio_client, pvc_directory, file_name):
 def copy_to_pvc(minio_client, file_name, last_modified, pvc_directory):
     print("copying to pvc: ", file_name, pvc_directory)
     minio_client.fget_object(
-        wiof_objstor_constants.OBJSTOR_BUCKET,
+        wiof_objstor_constants.S3_BUCKET_NAME,
         file_name,
         os.path.join(pvc_directory, file_name.lower()),
     )
@@ -57,8 +57,8 @@ def main(argv):
 
     minio_client = Minio(
         endpoint=wiof_objstor_constants.OBJSTOR_ENDPOINT,
-        access_key=wiof_objstor_constants.OBJSTOR_ACCESS_KEY,
-        secret_key=wiof_objstor_constants.OBJSTOR_SECRET_KEY,
+        access_key=wiof_objstor_constants.ACCESS_KEY,
+        secret_key=wiof_objstor_constants.SECRET_KEY,
         region="US",
     )
 
@@ -67,7 +67,7 @@ def main(argv):
 
     # add bucket file names and last modified timestamp to comparison dictionary
     bucket_files = minio_client.list_objects(
-        wiof_objstor_constants.OBJSTOR_BUCKET,
+        wiof_objstor_constants.S3_BUCKET_NAME,
         recursive=True,
         use_url_encoding_type=False,
     )
@@ -144,7 +144,7 @@ def main(argv):
     # sync the pvc timestamps up with the new bucket files, as we can't update timestamps on bucket files
     print("Syncing pvc modified timestamps with object storage")
     bucket_files = minio_client.list_objects(
-        wiof_objstor_constants.OBJSTOR_BUCKET,
+        wiof_objstor_constants.S3_BUCKET_NAME,
         recursive=True,
         use_url_encoding_type=False,
     )

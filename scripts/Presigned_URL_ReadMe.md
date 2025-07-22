@@ -4,7 +4,7 @@ This will output a pre-signed URL for your object that will allow the user to do
 
 1. Create an .env file that contains the following information:
     - *OBJSTOR_PUBLIC_ENDPOINT = 'https://nrs.objectstore.gov.bc.ca:443'*
-    - *AWS_SERVER_PUBLIC_KEY = 'YOUR_OBJECT_STORAGE_USER_ID'*
+    - *AWS_ACCESS_KEY = 'YOUR_OBJECT_STORAGE_USER_ID'*
     - *AWS_SERVER_SECRET_KEY = 'YOUR_OBJECT_STORAGE_SECRET_KEY'*
 3. Download **requirements.txt, constants.py** and **create_presigned_url_for_s3_objects.py** from this Object Storage GitHub repo
 4. Save all 4 files in the same folder
