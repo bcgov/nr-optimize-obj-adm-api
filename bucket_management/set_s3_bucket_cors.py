@@ -18,17 +18,17 @@ import boto3
 from botocore.exceptions import ClientError
 
 endpoint = "https://nrs.objectstore.gov.bc.ca:443"
-access_key = "my-user-id"
-secret_key = "my-secret-key"
-bucket_name = "abcdef"
+access_key = "nr-myaccesskey-pr"
+secret_key = "123456789"
+bucket_name = "bucketname"
 
 # AllowedOrigins should not use a wildcard
 cors_configuration = {
     'CORSRules': [{
         'AllowedHeaders': ['*'],
         'AllowedMethods': ['HEAD', 'GET', 'PUT', 'POST', 'DELETE'],
-        'AllowedOrigins': ['https://my-domain.ca','https://my-other-domain.ca'],
-        'ExposeHeaders': ['ETag', 'x-amz-request-id'],
+        'AllowedOrigins': ['https://apps.silver.devops.gov.bc.ca'],
+        'ExposeHeaders': ['ETag', 'x-amz-request-id','Access-Control-Allow-Origin'],
         'MaxAgeSeconds': 3000
     }]
 }
