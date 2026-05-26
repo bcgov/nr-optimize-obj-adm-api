@@ -21,3 +21,4 @@ ACCESS_KEY = os.environ["ACCESS_KEY"]
 SECRET_KEY = os.environ["SECRET_KEY"]
 S3_ENDPOINT = os.environ["S3_ENDPOINT"]
 S3_BUCKET_NAME = os.environ["S3_BUCKET_NAME"]
+

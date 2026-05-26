@@ -2,8 +2,16 @@
     "version": "0.2.0",
     "configurations": [  
         {
+            "name": "Python: upload_folder",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "bucket_management\\upload_folder.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },    
+        {
             "name": "Python: delete bucket versions",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "bucket_management\\delete_bucket_versions.py",
             "args": [],
@@ -21,7 +29,7 @@
         },      
         {
             "name": "Python: set_s3_bucket_cors",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "bucket_management\\set_s3_bucket_cors.py",
             "args": [],
@@ -29,7 +37,7 @@
         },
         {
             "name": "Python: Export_All_Bucket_Metadata",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "bucket_management\\export_all_bucket_metadata.py",
             "args": [],
@@ -37,7 +45,7 @@
         },            
         {
             "name": "Python: Create_buckets",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "bucket_management\\create_buckets.py",
             "args": [],
@@ -45,7 +53,7 @@
         },          
         {
             "name": "Python: WIOF Data Sync",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "wiof_datasync\\wiof_objstor_datasync.py",
             "args": [],
@@ -53,7 +61,7 @@
         },          
         {
             "name": "Python: WIOF Data Sync",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "wiof_datasync\\wiof_objstor_datasync.py",
             "args": [],
@@ -61,7 +69,7 @@
         },
         {
             "name": "Python: Uppercase",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "bucket_management\\bucket_extract_uppercase.py",
             "args": [],
