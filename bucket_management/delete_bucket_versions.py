@@ -80,7 +80,7 @@ while True:
     list_file_names = get_filenames(boto_client)
 
     # set a maximum amount of versions for each file
-    maximum_versions = 300
+    maximum_versions = 50
     # reduce the list of file names to only keys with over the maximum count
     list_file_names = {key: value for key, value in list_file_names.items() if value > maximum_versions}
 
@@ -93,6 +93,9 @@ while True:
                 f.write(line+','+str(list[line]))
                 f.write("\n")
     write_list(list_file_names)
+
+    print(f"Found {len(list_file_names)} files with more than {maximum_versions} versions.")
+    print(f"List of files and version counts written to C:/Git_Repo/Output/{outputname}.")
 
     # allow user to check the text file before confirming delete
     confirm = input("Confirm Delete (Y/N):")
