@@ -7,7 +7,8 @@
             "request": "launch",
             "program": "bucket_management\\upload_folder.py",
             "args": [],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
         },    
         {
             "name": "Python: delete bucket versions",
@@ -15,7 +16,8 @@
             "request": "launch",
             "program": "bucket_management\\delete_bucket_versions.py",
             "args": [],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
         },              
         {
             "name": "PS: sfp_objstor_robo",
@@ -33,7 +35,8 @@
             "request": "launch",
             "program": "bucket_management\\set_s3_bucket_cors.py",
             "args": [],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
         },
         {
             "name": "Python: Export_All_Bucket_Metadata",
@@ -41,7 +44,8 @@
             "request": "launch",
             "program": "bucket_management\\export_all_bucket_metadata.py",
             "args": [],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
         },            
         {
             "name": "Python: Create_buckets",
@@ -49,7 +53,8 @@
             "request": "launch",
             "program": "bucket_management\\create_buckets.py",
             "args": [],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
         },          
         {
             "name": "Python: WIOF Data Sync",
@@ -57,7 +62,8 @@
             "request": "launch",
             "program": "wiof_datasync\\wiof_objstor_datasync.py",
             "args": [],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
         },          
         {
             "name": "Python: WIOF Data Sync",
@@ -65,7 +71,8 @@
             "request": "launch",
             "program": "wiof_datasync\\wiof_objstor_datasync.py",
             "args": [],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
         },
         {
             "name": "Python: Uppercase",
@@ -73,7 +80,8 @@
             "request": "launch",
             "program": "bucket_management\\bucket_extract_uppercase.py",
             "args": [],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
         }
     ],
     "justMyCode":false
