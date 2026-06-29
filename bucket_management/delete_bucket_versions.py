@@ -116,7 +116,8 @@ while True:
                 delete_objects.append({"Key":line,"VersionId":item["VersionId"]})
             print(f"Deleting {len(delete_objects)} from {line}")
             # delete unwanted versions
-            result = boto_client.delete_objects(Bucket=bucket,Delete={'Objects': delete_objects},ChecksumAlgorithm='SHA256')
+            # result = boto_client.delete_objects(Bucket=bucket,Delete={'Objects': delete_objects},ChecksumAlgorithm='SHA256')
+            result = boto_client.delete_objects(Bucket=bucket,Delete={'Objects': delete_objects})
             print(f"Deleted {len(result['Deleted'])} from {line}")
     print("Sleeping...")
     sleep(600)
