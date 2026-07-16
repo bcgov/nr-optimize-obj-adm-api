@@ -12,13 +12,13 @@ DRY_RUN = True
 dotenv.load_dotenv()
 
 # AWS credentials and bucket info
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_S3_ENDPOINT = os.getenv("AWS_S3_ENDPOINT")
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET")
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Validate environment variables
-if not all([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_ENDPOINT, AWS_S3_BUCKET]):
+if not all([ACCESS_KEY, SECRET_KEY, S3_ENDPOINT, S3_BUCKET_NAME]):
     raise ValueError("Missing required AWS environment variables in .env file.")
 
 # Read object keys from os_keys.txt
@@ -28,9 +28,9 @@ with open("os_keys.txt", "r") as f:
 # Initialize boto3 S3 client
 s3_client = boto3.client(
     "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    endpoint_url=AWS_S3_ENDPOINT
+    ACCESS_KEY=ACCESS_KEY,
+    SECRET_KEY=SECRET_KEY,
+    endpoint_url=S3_ENDPOINT
 )
 
 deleted = []
@@ -54,7 +54,7 @@ for key in object_keys:
             skipped.append((key, "Dry-Run", "No deletion performed"))
         else:
             # Perform soft delete (adds delete marker if versioning enabled)
-            s3_client.delete_object(Bucket=AWS_S3_BUCKET, Key=key)
+            s3_client.delete_object(Bucket=S3_BUCKET_NAME, Key=key)
             deleted.append((key, "Deleted", ""))
     except ClientError as e:
         skipped.append((key, "Skipped", f"Delete failed: {e}"))

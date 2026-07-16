@@ -25,19 +25,19 @@ load_dotenv()
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-AWS_ACCESS_KEY_ID     = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_S3_ENDPOINT       = os.getenv("AWS_S3_ENDPOINT")
-AWS_S3_BUCKET         = os.getenv("AWS_S3_BUCKET")
-AWS_S3_PREFIX         = (os.getenv("AWS_S3_PREFIX") or "").strip()
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+S3_BUCKET_PREFIX = (os.getenv("S3_BUCKET_PREFIX") or "").strip()
 
-if "&amp;" in AWS_S3_PREFIX:
+if "&amp;" in S3_BUCKET_PREFIX:
     raise ValueError(
-        "AWS_S3_PREFIX contains '&amp;'. "
+        "S3_BUCKET_PREFIX contains '&amp;'. "
         "S3 keys use literal '&'. Fix the .env value."
     )
 
-if not all([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_ENDPOINT, AWS_S3_BUCKET]):
+if not all([ACCESS_KEY, SECRET_KEY, S3_ENDPOINT, S3_BUCKET_NAME]):
     raise ValueError("Missing required AWS environment variables. Check your .env file.")
 
 # NOTE: utf-8-sig strips BOM characters that break substring matching
@@ -70,21 +70,21 @@ def matches_key(key: str):
 # ----------------------------
 s3 = boto3.client(
     "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    endpoint_url=AWS_S3_ENDPOINT,
+    ACCESS_KEY=ACCESS_KEY,
+    SECRET_KEY=SECRET_KEY,
+    endpoint_url=S3_ENDPOINT,
 )
 
 agg = {}
 
 paginator = s3.get_paginator("list_object_versions")
-paginate_kwargs = {"Bucket": AWS_S3_BUCKET}
+paginate_kwargs = {"Bucket": S3_BUCKET_NAME}
 
-if AWS_S3_PREFIX:
-    if not AWS_S3_PREFIX.endswith("/"):
-        AWS_S3_PREFIX = AWS_S3_PREFIX + "/"
-    paginate_kwargs["Prefix"] = AWS_S3_PREFIX
-    print(f"Running with prefix scope: {AWS_S3_PREFIX}")
+if S3_BUCKET_PREFIX:
+    if not S3_BUCKET_PREFIX.endswith("/"):
+        S3_BUCKET_PREFIX = S3_BUCKET_PREFIX + "/"
+    paginate_kwargs["Prefix"] = S3_BUCKET_PREFIX
+    print(f"Running with prefix scope: {S3_BUCKET_PREFIX}")
 else:
     print("Running with full-bucket scope (no prefix filter)")
 
@@ -151,7 +151,7 @@ records = sorted(
     key=lambda r: (r["Key"].lower(), r["latest_last_modified"])
 )
 
-scoped = f" (scoped to prefix: {AWS_S3_PREFIX})" if AWS_S3_PREFIX else ""
+scoped = f" (scoped to prefix: {S3_BUCKET_PREFIX})" if S3_BUCKET_PREFIX else ""
 
 if len(records) == 0:
     print(f"No objects matched{scoped}. No output file created.")

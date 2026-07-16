@@ -24,17 +24,17 @@ import os
 # -------------------------------
 load_dotenv()
 
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_S3_ENDPOINT = os.getenv("AWS_S3_ENDPOINT")
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET")
-AWS_S3_PREFIX = os.getenv("AWS_S3_PREFIX")
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+S3_BUCKET_PREFIX = os.getenv("S3_BUCKET_PREFIX")
 
 if not all([
-    AWS_ACCESS_KEY_ID,
-    AWS_SECRET_ACCESS_KEY,
-    AWS_S3_ENDPOINT,
-    AWS_S3_BUCKET
+    ACCESS_KEY,
+    SECRET_KEY,
+    S3_ENDPOINT,
+    S3_BUCKET_NAME
 ]):
     raise ValueError("Missing required AWS environment variables.")
 
@@ -49,9 +49,9 @@ target_dt = datetime.strptime(target_input, "%Y-%m-%d %H:%M:%S").replace(tzinfo=
 # -------------------------------
 s3 = boto3.client(
     "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    endpoint_url=AWS_S3_ENDPOINT
+    ACCESS_KEY=ACCESS_KEY,
+    SECRET_KEY=SECRET_KEY,
+    endpoint_url=S3_ENDPOINT
 )
 
 # -------------------------------
@@ -102,11 +102,11 @@ def print_tree(tree, indent=0):
 paginator = s3.get_paginator("list_object_versions")
 
 pagination_args = {
-    "Bucket": AWS_S3_BUCKET
+    "Bucket": S3_BUCKET_NAME
 }
 
-if AWS_S3_PREFIX:
-    pagination_args["Prefix"] = AWS_S3_PREFIX
+if S3_BUCKET_PREFIX:
+    pagination_args["Prefix"] = S3_BUCKET_PREFIX
 
 for page in paginator.paginate(**pagination_args):
 

@@ -9,13 +9,13 @@ from datetime import datetime
 dotenv.load_dotenv()
 
 # AWS credentials and bucket info
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_S3_ENDPOINT = os.getenv("AWS_S3_ENDPOINT")
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET")
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Validate environment variables
-if not all([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_ENDPOINT, AWS_S3_BUCKET]):
+if not all([ACCESS_KEY, SECRET_KEY, S3_ENDPOINT, S3_BUCKET_NAME]):
     raise ValueError("Missing required AWS environment variables in .env file.")
 
 # Read object keys from os_keys.txt
@@ -25,9 +25,9 @@ with open("os_keys.txt", "r") as f:
 # Initialize boto3 S3 client
 s3_client = boto3.client(
     "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    endpoint_url=AWS_S3_ENDPOINT
+    ACCESS_KEY=ACCESS_KEY,
+    SECRET_KEY=SECRET_KEY,
+    endpoint_url=S3_ENDPOINT
 )
 
 restored = []
@@ -36,7 +36,7 @@ skipped = []
 for key in object_keys:
     try:
         # Get all versions of the object
-        versions = s3_client.list_object_versions(Bucket=AWS_S3_BUCKET, Prefix=key)
+        versions = s3_client.list_object_versions(Bucket=S3_BUCKET_NAME, Prefix=key)
         version_list = versions.get("Versions", [])
 
         if not version_list:
@@ -58,8 +58,8 @@ for key in object_keys:
         # Restore by copying this version to the same key (creates a new latest version)
         try:
             s3_client.copy_object(
-                Bucket=AWS_S3_BUCKET,
-                CopySource={"Bucket": AWS_S3_BUCKET, "Key": key, "VersionId": version_id},
+                Bucket=S3_BUCKET_NAME,
+                CopySource={"Bucket": S3_BUCKET_NAME, "Key": key, "VersionId": version_id},
                 Key=key
             )
             restored.append((key, "Restored", ""))

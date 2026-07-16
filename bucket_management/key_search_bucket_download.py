@@ -10,13 +10,13 @@ import dotenv
 dotenv.load_dotenv()
 
 # AWS credentials and bucket info
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_S3_ENDPOINT = os.getenv("AWS_S3_ENDPOINT")
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET")
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Validate environment variables
-if not all([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_ENDPOINT, AWS_S3_BUCKET]):
+if not all([ACCESS_KEY, SECRET_KEY, S3_ENDPOINT, S3_BUCKET_NAME]):
     raise ValueError("Missing required AWS environment variables in .env file.")
 
 # Read object keys from os_keys.txt
@@ -26,9 +26,9 @@ with open("os_keys.txt", "r") as f:
 # Initialize boto3 S3 client
 s3_client = boto3.client(
     "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    endpoint_url=AWS_S3_ENDPOINT
+    ACCESS_KEY=ACCESS_KEY,
+    SECRET_KEY=SECRET_KEY,
+    endpoint_url=S3_ENDPOINT
 )
 
 # Prepare CSV output file name with timestamp
@@ -51,7 +51,7 @@ def get_file_type(key, content_type):
 rows = []
 for key in object_keys:
     try:
-        versions = s3_client.list_object_versions(Bucket=AWS_S3_BUCKET, Prefix=key)
+        versions = s3_client.list_object_versions(Bucket=S3_BUCKET_NAME, Prefix=key)
         version_list = versions.get("Versions", [])
         delete_markers = versions.get("DeleteMarkers", [])
 
@@ -67,7 +67,7 @@ for key in object_keys:
         # Try to get ContentType from head_object
         content_type = ""
         try:
-            head = s3_client.head_object(Bucket=AWS_S3_BUCKET, Key=key)
+            head = s3_client.head_object(Bucket=S3_BUCKET_NAME, Key=key)
             content_type = head.get("ContentType", "")
         except ClientError:
             pass
@@ -95,7 +95,7 @@ for key in object_keys:
             try:
                 download_path = os.path.join(download_folder, key)
                 s3_client.download_file(
-                    AWS_S3_BUCKET,
+                    S3_BUCKET_NAME,
                     key,
                     download_path,
                     ExtraArgs={"VersionId": download_version["VersionId"]}

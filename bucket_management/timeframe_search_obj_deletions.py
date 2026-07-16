@@ -3,7 +3,7 @@ search_objdels_with_prefix_and_versions.py
 
 Description:
     Searches an S3 bucket for deleted objects within a specified timeframe,
-    optionally scoped by AWS_S3_PREFIX. Enhances original script by retrieving:
+    optionally scoped by S3_BUCKET_PREFIX. Enhances original script by retrieving:
 
     - Object Key
     - Version ID
@@ -30,18 +30,18 @@ import os
 # -------------------------------
 load_dotenv()
 
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_S3_ENDPOINT = os.getenv("AWS_S3_ENDPOINT")
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET")
-AWS_S3_PREFIX = os.getenv("AWS_S3_PREFIX")  # <-- New: prefix support
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+S3_BUCKET_PREFIX = os.getenv("S3_BUCKET_PREFIX")  # <-- New: prefix support
 
 # Validate required variables
 if not all([
-    AWS_ACCESS_KEY_ID,
-    AWS_SECRET_ACCESS_KEY,
-    AWS_S3_ENDPOINT,
-    AWS_S3_BUCKET
+    ACCESS_KEY,
+    SECRET_KEY,
+    S3_ENDPOINT,
+    S3_BUCKET_NAME
 ]):
     raise ValueError("Missing required AWS environment variables.")
 
@@ -59,9 +59,9 @@ end_date = datetime.strptime(end_input, "%Y-%m-%d").replace(tzinfo=timezone.utc)
 # -------------------------------
 s3 = boto3.client(
     "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    endpoint_url=AWS_S3_ENDPOINT
+    ACCESS_KEY=ACCESS_KEY,
+    SECRET_KEY=SECRET_KEY,
+    endpoint_url=S3_ENDPOINT
 )
 
 # -------------------------------
@@ -80,12 +80,12 @@ deletions = []
 paginator = s3.get_paginator("list_object_versions")
 
 pagination_args = {
-    "Bucket": AWS_S3_BUCKET,
+    "Bucket": S3_BUCKET_NAME,
 }
 
 # Apply prefix filtering if provided
-if AWS_S3_PREFIX:
-    pagination_args["Prefix"] = AWS_S3_PREFIX
+if S3_BUCKET_PREFIX:
+    pagination_args["Prefix"] = S3_BUCKET_PREFIX
 
 def clean_string(value):
     """

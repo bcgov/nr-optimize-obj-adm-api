@@ -57,9 +57,9 @@ def create_s3_client():
     """
     return boto3.client(
         "s3",
-        endpoint_url=constants.AWS_S3_ENDPOINT,
-        aws_access_key_id=constants.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=constants.AWS_SECRET_ACCESS_KEY,
+        S3_ENDPOINT=constants.AWS_S3_ENDPOINT,
+        ACCESS_KEY=constants.ACCESS_KEY,
+        SECRET_KEY=constants.SECRET_KEY,
     )
 
 
@@ -162,8 +162,8 @@ def main():
     """
     Main execution function.
     """
-    bucket = constants.AWS_S3_BUCKET
-    prefix = constants.AWS_S3_PREFIX
+    bucket = constants.S3_BUCKET_NAME
+    prefix = constants.S3_BUCKET_PREFIX
 
     cutoff_date = datetime.now(timezone.utc) - timedelta(days=90)
 

@@ -24,13 +24,13 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 # Load environment variables
 load_dotenv()
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_S3_ENDPOINT = os.getenv("AWS_S3_ENDPOINT")
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET")
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Validate environment variables
-if not all([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_ENDPOINT, AWS_S3_BUCKET]):
+if not all([ACCESS_KEY, SECRET_KEY, S3_ENDPOINT, S3_BUCKET_NAME]):
     raise ValueError("Missing required AWS environment variables. Check your .env file.")
 
 # Prompt user for date range
@@ -42,16 +42,16 @@ end_date = datetime.strptime(end_input, "%Y-%m-%d").replace(tzinfo=timezone.utc)
 # Initialize S3 client
 s3 = boto3.client(
     's3',
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    endpoint_url=AWS_S3_ENDPOINT
+    ACCESS_KEY=ACCESS_KEY,
+    SECRET_KEY=SECRET_KEY,
+    endpoint_url=S3_ENDPOINT
 )
 
 deletions = []
 
 # Paginate through object versions
 paginator = s3.get_paginator('list_object_versions')
-for page in paginator.paginate(Bucket=AWS_S3_BUCKET):
+for page in paginator.paginate(Bucket=S3_BUCKET_NAME):
     if 'DeleteMarkers' in page:
         for marker in page['DeleteMarkers']:
             last_modified = marker['LastModified']
