@@ -35,16 +35,16 @@ timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 # Load environment variables
 # ----------------------------------------------------------------------
 load_dotenv()
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_S3_ENDPOINT = os.getenv("AWS_S3_ENDPOINT")
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET")
-AWS_S3_PREFIX = os.getenv("AWS_S3_PREFIX", "").strip()
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+S3_BUCKET_PREFIX = os.getenv("S3_BUCKET_PREFIX", "").strip()
 
 # ----------------------------------------------------------------------
 # Validate environment variables
 # ----------------------------------------------------------------------
-if not all([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_ENDPOINT, AWS_S3_BUCKET]):
+if not all([ACCESS_KEY, SECRET_KEY, S3_ENDPOINT, S3_BUCKET_NAME]):
     raise ValueError("Missing required AWS environment variables. Check your .env file.")
 
 # ----------------------------------------------------------------------
@@ -52,21 +52,21 @@ if not all([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_ENDPOINT, AWS_S3_BU
 # ----------------------------------------------------------------------
 s3 = boto3.client(
     "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    endpoint_url=AWS_S3_ENDPOINT
+    ACCESS_KEY=ACCESS_KEY,
+    SECRET_KEY=SECRET_KEY,
+    endpoint_url=S3_ENDPOINT
 )
 
 # ----------------------------------------------------------------------
 # Prepare paginator arguments (optional prefix scoping)
 # ----------------------------------------------------------------------
 paginator = s3.get_paginator("list_object_versions")
-paginate_kwargs = {"Bucket": AWS_S3_BUCKET}
+paginate_kwargs = {"Bucket": S3_BUCKET_NAME}
 
-if AWS_S3_PREFIX:
-    if not AWS_S3_PREFIX.endswith("/"):
-        AWS_S3_PREFIX = AWS_S3_PREFIX + "/"
-    paginate_kwargs["Prefix"] = AWS_S3_PREFIX
+if S3_BUCKET_PREFIX:
+    if not S3_BUCKET_PREFIX.endswith("/"):
+        S3_BUCKET_PREFIX = S3_BUCKET_PREFIX + "/"
+    paginate_kwargs["Prefix"] = S3_BUCKET_PREFIX
 
 # ----------------------------------------------------------------------
 # Collect results (do not write file yet)
@@ -110,7 +110,7 @@ for page in paginator.paginate(**paginate_kwargs):
             prev_id_for_csv = ""
 
         rows.append([
-            AWS_S3_BUCKET,
+            S3_BUCKET_NAME,
             key,
             deleted_at.astimezone(timezone.utc).isoformat(),
             prev_id_for_csv,
@@ -121,7 +121,7 @@ for page in paginator.paginate(**paginate_kwargs):
 # ----------------------------------------------------------------------
 # Write output only if deletions found
 # ----------------------------------------------------------------------
-scoped = f" (scoped to prefix: {AWS_S3_PREFIX})" if AWS_S3_PREFIX else ""
+scoped = f" (scoped to prefix: {S3_BUCKET_PREFIX})" if S3_BUCKET_PREFIX else ""
 
 if count > 0:
     output_csv = os.path.join(

@@ -15,7 +15,7 @@ creating a new current version.
 
 Inputs
 ------
-- .env: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_ENDPOINT, AWS_S3_BUCKET (optional), OUTPUT_PATH (optional)
+- .env: ACCESS_KEY, SECRET_KEY, S3_ENDPOINT, S3_BUCKET_NAME (optional), OUTPUT_PATH (optional)
 - XLSX: default 'restore_input.xlsx' with columns:
       Required: Key, PreviousVersionId
       Optional: Bucket (overrides .env bucket per row)
@@ -37,22 +37,22 @@ Notes
   * Key -> "key"
   * PreviousVersionId -> "previousversionid", "versionid", "version", "prevversionid"
   * Bucket -> "bucket"
-- If AWS_S3_BUCKET is omitted in .env, you must provide a Bucket value per row.
+- If S3_BUCKET_NAME is omitted in .env, you must provide a Bucket value per row.
 - If OUTPUT_PATH is set in .env and --output is not provided, the report will be written to that folder.
 """
 
 def load_env():
     load_dotenv()
     cfg = {
-        "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),
-        "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),
-        "AWS_S3_ENDPOINT": os.getenv("AWS_S3_ENDPOINT"),
-        "AWS_S3_BUCKET": os.getenv("AWS_S3_BUCKET"),
+        "ACCESS_KEY": os.getenv("ACCESS_KEY"),
+        "SECRET_KEY": os.getenv("SECRET_KEY"),
+        "S3_ENDPOINT": os.getenv("S3_ENDPOINT"),
+        "S3_BUCKET_NAME": os.getenv("S3_BUCKET_NAME"),
         "OUTPUT_PATH": os.getenv("OUTPUT_PATH"),
     }
 
     # Only these are strictly required; bucket and output path are optional
-    required_keys = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_S3_ENDPOINT"]
+    required_keys = ["ACCESS_KEY", "SECRET_KEY", "S3_ENDPOINT"]
     missing = [k for k in required_keys if not cfg.get(k)]
     if missing:
         raise ValueError("Missing required AWS environment variables in .env: " + ", ".join(missing))
@@ -62,9 +62,9 @@ def load_env():
 def get_s3_client(cfg):
     return boto3.client(
         "s3",
-        aws_access_key_id=cfg["AWS_ACCESS_KEY_ID"],
-        aws_secret_access_key=cfg["AWS_SECRET_ACCESS_KEY"],
-        endpoint_url=cfg["AWS_S3_ENDPOINT"],
+        ACCESS_KEY=cfg["ACCESS_KEY"],
+        SECRET_KEY=cfg["SECRET_KEY"],
+        endpoint_url=cfg["S3_ENDPOINT"],
     )
 
 def encode_copy_source(bucket, key, version_id):
@@ -140,7 +140,7 @@ def restore_from_xlsx(s3, cfg, input_xlsx, output_xlsx, input_sheet=None, report
         prev_id = _safe_str(row.get(prev_col)).strip()
         row_bucket = _safe_str(row.get(bucket_col)).strip() if bucket_col else ""
 
-        bucket = row_bucket or cfg.get("AWS_S3_BUCKET", "")
+        bucket = row_bucket or cfg.get("S3_BUCKET_NAME", "")
 
         if not bucket:
             skipped.append((key, "Skipped", "Missing bucket (not in .env and no Bucket column)"))

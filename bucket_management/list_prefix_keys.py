@@ -43,19 +43,19 @@ def req(name: str) -> str:
 def main():
     load_dotenv_if_present()
 
-    endpoint = req('AWS_S3_ENDPOINT')
-    bucket   = req('AWS_S3_BUCKET')
-    access   = req('AWS_ACCESS_KEY_ID')
-    secret   = req('AWS_SECRET_ACCESS_KEY')
-    prefix   = os.environ.get('AWS_S3_PREFIX','')
+    endpoint = req('S3_ENDPOINT')
+    bucket   = req('S3_BUCKET_NAME')
+    access   = req('ACCESS_KEY')
+    secret   = req('SECRET_KEY')
+    prefix   = os.environ.get('S3_BUCKET_PREFIX','')
     region   = os.environ.get('ECS_REGION','').strip() or None
 
     s3 = boto3.client(
         's3',
         endpoint_url=endpoint,
         region_name=region,
-        aws_access_key_id=access,
-        aws_secret_access_key=secret,
+        ACCESS_KEY=access,
+        SECRET_KEY=secret,
         config=Config(signature_version='s3v4', s3={'addressing_style':'path'})
     )
 
