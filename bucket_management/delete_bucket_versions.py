@@ -21,11 +21,53 @@
 # -------------------------------------------------------------------------------
 
 # import python libraries
+import os
 from time import sleep
 import boto3
 from botocore.config import Config as botocoreConfig
 import constants
 
+# write the list of filenames and file counts to a text file
+def write_list(list={}):
+    with open(outputdir + outputname, "w") as f: # change the folder path to suit your needs
+        for line in list:
+            f.write(line+','+str(list[line]))
+            f.write("\n")
+
+
+# get a list of bucket file names
+def get_filenames(boto_client):
+
+    # get first 1000 objects
+    result = boto_client.list_object_versions(Bucket=bucket)
+    # put all objects into a dictionary, with the value as a counter
+    keyCount = {}
+    for item in result["Versions"]:
+        if item["Key"] not in keyCount:
+            keyCount[item["Key"]] = 1
+        else:
+            keyCount[item["Key"]] += 1
+
+    # if there are more than 1000 results, repeat the process until there are no extras
+    continuationToken = result["NextKeyMarker"] if "NextKeyMarker" in result else None
+    while continuationToken:   
+        print(continuationToken)   
+        result = boto_client.list_object_versions(Bucket=bucket,KeyMarker=continuationToken)
+        if "Versions" in result:
+            for item in result["Versions"]:
+                if item["Key"] not in keyCount:
+                    keyCount[item["Key"]] = 1
+                else:
+                    keyCount[item["Key"]] += 1
+        else:
+            if item["Key"] not in keyCount:
+                keyCount[item["Key"]] = 1
+            else:
+                keyCount[item["Key"]] += 1
+        continuationToken = result["NextKeyMarker"] if "NextKeyMarker" in result else None
+    return keyCount
+
+# delete files 
 
 while True:
     # create a client with S3, the access key, secret key, and public endpoint.
@@ -42,60 +84,36 @@ while True:
 
     bucket = constants.S3_BUCKET_NAME
 
-    # placeholder list for the filenames
-    filenames = []
-
-    # get a list of bucket file names
-    def get_filenames(boto_client):
-
-        # get first 1000 objects
-        result = boto_client.list_object_versions(Bucket=bucket)
-        # put all objects into a dictionary, with the value as a counter
-        keyCount = {}
-        for item in result["Versions"]:
-            if item["Key"] not in keyCount:
-                keyCount[item["Key"]] = 1
-            else:
-                keyCount[item["Key"]] += 1
-
-        # if there are more than 1000 results, repeat the process until there are no extras
-        continuationToken = result["NextKeyMarker"] if "NextKeyMarker" in result else None
-        while continuationToken:   
-            print(continuationToken)   
-            result = boto_client.list_object_versions(Bucket=bucket,KeyMarker=continuationToken)
-            if "Versions" in result:
-                for item in result["Versions"]:
-                    if item["Key"] not in keyCount:
-                        keyCount[item["Key"]] = 1
-                    else:
-                        keyCount[item["Key"]] += 1
-            else:
-                if item["Key"] not in keyCount:
-                    keyCount[item["Key"]] = 1
-                else:
-                    keyCount[item["Key"]] += 1
-            continuationToken = result["NextKeyMarker"] if "NextKeyMarker" in result else None
-        return keyCount
-
-    list_file_names = get_filenames(boto_client)
-
     # set a maximum amount of versions for each file
     maximum_versions = 50
-    # reduce the list of file names to only keys with over the maximum count
-    list_file_names = {key: value for key, value in list_file_names.items() if value > maximum_versions}
-
+    
     # name the text file that is saved to your output folder
     outputname = f"{bucket}_filenames.txt"
-    # write the list of filenames and file counts to a text file
-    def write_list(list={}):
-        with open(r"C:/Git_Repo/Output/" + outputname, "w") as f: # change the folder path to suit your needs
-            for line in list:
-                f.write(line+','+str(list[line]))
-                f.write("\n")
-    write_list(list_file_names)
+    outputdir = r"C:/Git_Repo/Output/"
 
-    print(f"Found {len(list_file_names)} files with more than {maximum_versions} versions.")
-    print(f"List of files and version counts written to C:/Git_Repo/Output/{outputname}.")
+    # placeholder list for the list_file_names
+    list_file_names = []
+
+    use_existing_file = False
+    # Check if we want to use an existing file or create a new one
+    if os.path.exists(outputdir + outputname):
+        confirm = input(f"File {outputdir + outputname} already exists. Do you want to use it? (Y/N): ")
+        if confirm.capitalize() == "Y":
+            use_existing_file = True
+
+    if use_existing_file:
+        # read the list of filenames and file counts from a text file
+        with open(outputdir + outputname, "r") as f: # change the folder path to suit your needs
+            for line in f:
+                key, count = line.strip().split(',')
+                list_file_names.append(key)
+    else:
+        list_file_names = get_filenames(boto_client)
+        # reduce the list of file names to only keys with over the maximum count
+        list_file_names = {key: value for key, value in list_file_names.items() if value > maximum_versions}
+        write_list(list_file_names)
+        print(f"Found {len(list_file_names)} files with more than {maximum_versions} versions.")
+        print(f"List of files and version counts written to {outputdir}{outputname}.")
 
     # allow user to check the text file before confirming delete
     confirm = input("Confirm Delete (Y/N):")
