@@ -1,0 +1,5 @@
+For object & object deletion search scripts: put filenames or keywords that you're searching for here.
+
+keyword1
+keyword2
+etc.

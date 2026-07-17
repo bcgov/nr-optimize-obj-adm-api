@@ -1,0 +1,5 @@
+For object search, download, deletion, and restore scripts: put object **keys** that you're searching for here.
+
+key1
+key2
+etc.
