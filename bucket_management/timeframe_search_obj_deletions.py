@@ -59,8 +59,8 @@ end_date = datetime.strptime(end_input, "%Y-%m-%d").replace(tzinfo=timezone.utc)
 # -------------------------------
 s3 = boto3.client(
     "s3",
-    ACCESS_KEY=ACCESS_KEY,
-    SECRET_KEY=SECRET_KEY,
+    aws_access_key_id=ACCESS_KEY,
+    aws_secret_access_key=SECRET_KEY,
     endpoint_url=S3_ENDPOINT
 )
 

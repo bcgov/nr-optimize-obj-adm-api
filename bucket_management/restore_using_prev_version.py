@@ -62,8 +62,8 @@ def load_env():
 def get_s3_client(cfg):
     return boto3.client(
         "s3",
-        ACCESS_KEY=cfg["ACCESS_KEY"],
-        SECRET_KEY=cfg["SECRET_KEY"],
+        aws_access_key_id=cfg["ACCESS_KEY"],
+        aws_secret_access_key=cfg["SECRET_KEY"],
         endpoint_url=cfg["S3_ENDPOINT"],
     )
 

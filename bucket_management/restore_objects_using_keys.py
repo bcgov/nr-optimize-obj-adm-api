@@ -25,8 +25,8 @@ with open("os_keys.txt", "r") as f:
 # Initialize boto3 S3 client
 s3_client = boto3.client(
     "s3",
-    ACCESS_KEY=ACCESS_KEY,
-    SECRET_KEY=SECRET_KEY,
+    aws_access_key_id=ACCESS_KEY,
+    aws_secret_access_key=SECRET_KEY,
     endpoint_url=S3_ENDPOINT
 )
 

@@ -54,8 +54,8 @@ def main():
         's3',
         endpoint_url=endpoint,
         region_name=region,
-        ACCESS_KEY=access,
-        SECRET_KEY=secret,
+        aws_access_key_id=access,
+        aws_secret_access_key=secret,
         config=Config(signature_version='s3v4', s3={'addressing_style':'path'})
     )
 

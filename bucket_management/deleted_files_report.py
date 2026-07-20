@@ -57,9 +57,9 @@ def create_s3_client():
     """
     return boto3.client(
         "s3",
+        aws_access_key_id=constants.ACCESS_KEY,
+        aws_secret_access_key=constants.SECRET_KEY,
         S3_ENDPOINT=constants.AWS_S3_ENDPOINT,
-        ACCESS_KEY=constants.ACCESS_KEY,
-        SECRET_KEY=constants.SECRET_KEY,
     )
 
 
