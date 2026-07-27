@@ -22,3 +22,4 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 S3_ENDPOINT = os.environ["S3_ENDPOINT"]
 BUCKET_NAME = os.environ["BUCKET_NAME"]
 BUCKET_PATH_PREFIX = os.environ["BUCKET_PATH_PREFIX"]
+TEST_FILE_PATH = "tests\Sample-Test-File.txt"

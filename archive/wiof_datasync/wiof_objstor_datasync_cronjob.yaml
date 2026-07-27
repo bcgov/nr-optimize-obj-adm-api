@@ -26,16 +26,16 @@ spec:
                     secretKeyRef:
                       name: objstor-datasync-test
                       key: ACCESS_KEY
-                - name: S3_BUCKET_NAME
+                - name: BUCKET_NAME
                   valueFrom:
                     secretKeyRef:
                       name: objstor-datasync-test
-                      key: S3_BUCKET_NAME
-                - name: OBJSTOR_ENDPOINT
+                      key: BUCKET_NAME
+                - name: S3_HOSTNAME
                   valueFrom:
                     secretKeyRef:
                       name: objstor-datasync-test
-                      key: OBJSTOR_ENDPOINT
+                      key: S3_HOSTNAME
                 - name: SECRET_KEY
                   valueFrom:
                     secretKeyRef:

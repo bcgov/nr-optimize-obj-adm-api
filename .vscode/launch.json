@@ -1,24 +1,6 @@
 {
     "version": "0.2.0",
-    "configurations": [  
-        {
-            "name": "Python: upload_folder",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "bucket_management\\upload_folder.py",
-            "args": [],
-            "console": "integratedTerminal",
-            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
-        },    
-        {
-            "name": "Python: delete bucket versions",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "bucket_management\\delete_bucket_versions.py",
-            "args": [],
-            "console": "integratedTerminal",
-            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
-        },              
+    "configurations": [              
         {
             "name": "PS: sfp_objstor_robo",
             "type": "PowerShell",
@@ -28,60 +10,17 @@
                 "-RootOrigin \"\\\\sfp.idir.bcgov\\S161\\S6202\\Mines Operations\\Regional Operations\\File Digitization Project - Pilot\\0400828\" -RootDestination \"\\\\objectstore.nrs.bcgov\\nrs-iit\\icacls_testing\\0400828\""
             ],
             "cwd": "${workspaceRoot}"
-        },      
-        {
-            "name": "Python: set_s3_bucket_cors",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "bucket_management\\set_s3_bucket_cors.py",
-            "args": [],
-            "console": "integratedTerminal",
-            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
         },
         {
-            "name": "Python: Export_All_Bucket_Metadata",
+            "name": "Python: tests/boto3/auth.py",
             "type": "debugpy",
             "request": "launch",
-            "program": "bucket_management\\export_all_bucket_metadata.py",
-            "args": [],
+            "program": "${workspaceFolder}/tests/boto3/auth.py",
             "console": "integratedTerminal",
-            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
-        },            
-        {
-            "name": "Python: Create_buckets",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "bucket_management\\create_buckets.py",
-            "args": [],
-            "console": "integratedTerminal",
-            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
-        },          
-        {
-            "name": "Python: WIOF Data Sync",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "wiof_datasync\\wiof_objstor_datasync.py",
-            "args": [],
-            "console": "integratedTerminal",
-            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
-        },          
-        {
-            "name": "Python: WIOF Data Sync",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "wiof_datasync\\wiof_objstor_datasync.py",
-            "args": [],
-            "console": "integratedTerminal",
-            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
-        },
-        {
-            "name": "Python: Uppercase",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "bucket_management\\bucket_extract_uppercase.py",
-            "args": [],
-            "console": "integratedTerminal",
-            "python": "${workspaceRoot}/.venv/Scripts/python.exe"
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         }
     ],
     "justMyCode":false

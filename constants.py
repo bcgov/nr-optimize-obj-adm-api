@@ -1,10 +1,9 @@
 import os
-import dotenv
+from dotenv import load_dotenv, find_dotenv
 
-envPath = os.path.join(os.path.dirname(__file__), ".env")
-if os.path.exists(envPath):
-    print("loading dot env...")
-    dotenv.load_dotenv()
+envPath = find_dotenv(usecwd=True)
+if envPath:
+    load_dotenv(dotenv_path=envPath)
 
 OBJSTOR_ADMIN = os.environ["OBJSTOR_ADMIN"]
 OBJSTOR_ADMIN_PASS = os.environ["OBJSTOR_ADMIN_PASS"]
@@ -22,3 +21,5 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 S3_ENDPOINT = os.environ["S3_ENDPOINT"]
 BUCKET_NAME = os.environ["BUCKET_NAME"]
 BUCKET_PATH_PREFIX = os.environ["BUCKET_PATH_PREFIX"]
+
+TEMP_DIR = os.environ["TEMP_DIR"]

@@ -12,74 +12,46 @@
 #
 # -------------------------------------------------------------------------------
 
-
-import logging
-import boto3
 from botocore.exceptions import ClientError
-
-endpoint = "https://nrs.objectstore.gov.bc.ca:443"
-access_key = "nr-myaccesskey-pr"
-secret_key = "123456789"
-bucket_name = "bucketname"
-
-# AllowedOrigins should not use a wildcard
-cors_configuration = {
-    'CORSRules': [{
-        'AllowedHeaders': ['*'],
-        'AllowedMethods': ['HEAD', 'GET', 'PUT', 'POST', 'DELETE'],
-        'AllowedOrigins': ['https://apps.silver.devops.gov.bc.ca'],
-        'ExposeHeaders': ['ETag', 'x-amz-request-id','Access-Control-Allow-Origin'],
-        'MaxAgeSeconds': 3000
-    }]
-}
-
-
-# Retrieve the CORS configuration
-def get_bucket_cors(s3_client, bucket_name):
-    print("Checking CORS Rules:")
-    try:
-        response = s3_client.get_bucket_cors(Bucket=bucket_name)
-        print(response['CORSRules'])
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'NoSuchCORSConfiguration':
-            print(f"No CORS Rules are currently set on {bucket_name}.")
-        else:
-            # AllAccessDisabled error == bucket not found
-            logging.error(e)
-        
-    print("")
-
-
-# Set a CORS configuration
-def set_bucket_cors(s3_client, bucket_name, cors_configuration):
-
-    try:
-        s3_client.put_bucket_cors(Bucket=bucket_name, CORSConfiguration=cors_configuration)    
-    except ClientError as e:        
-        logging.error(e)
-    # Set the CORS configuration
-    print("Set CORS Complete")
-    print("")
-
+from boto3_helpers.auth import get_client
+from boto3_helpers.security import get_bucket_cors, set_bucket_cors, sample_cors_configuration
+from utilities.file_helper import write_dict_to_new_file, open_file_in_notepad, create_dict_from_file
+from utilities.log_helper import LOGGER
+from constants import BUCKET_NAME, TEMP_DIR
+import os
 
 try:
 
     # Get the service client with sigv4 configured    
-    s3_client = boto3.client('s3',
-        endpoint_url=endpoint,        
-        aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key)
+    s3_client = get_client()
 
-    # Check pre-existing CORS Rules by printing to console
-    get_bucket_cors(s3_client, bucket_name)
+    # Get pre-existing CORS Rules
+    old_cors = get_bucket_cors(s3_client, BUCKET_NAME)
+    if old_cors is None:
+        confirm = input(f"Bucket {BUCKET_NAME} has no current CORS configuration. Open default configuration for edit? (Y/N):")
+        if confirm.capitalize()=="Y":
+            old_cors = sample_cors_configuration
+        else:
+            exit()
     
-    # Set the new rules
-    set_bucket_cors(s3_client, bucket_name, cors_configuration)
+    temp_file_path = os.path.join(TEMP_DIR,f"{BUCKET_NAME}_cors.txt")
+    write_dict_to_new_file(temp_file_path, old_cors)
 
-    # Check that the new rules applied successfully
-    get_bucket_cors(s3_client, bucket_name)
+    # Open the file for editing
+    open_file_in_notepad(temp_file_path)
+
+    # Wait for file close    
+    confirm = input(f"Make desired changes in notepad. Once saved, enter Y/N to upload. Upload? (Y/N):")
+    if confirm.capitalize()=="Y":
+        # Update CORS
+        new_cors = create_dict_from_file(temp_file_path)
+        set_bucket_cors(s3_client, BUCKET_NAME, new_cors)
+    
+    # Display newly applied rules
+    LOGGER.info("New CORS:")
+    LOGGER.info(get_bucket_cors(s3_client, BUCKET_NAME))
 
 
 except ClientError as e:
-    logging.error(e)
+    LOGGER.error(e)
 

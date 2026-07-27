@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "nr-optimize-obj-adm-api"
+version = "0.1.0"
+description = "Object Storage Administration API Utilities"
+authors = ["OPTIMIZE Team <OPTIMIZE@nrs.gov.bc.ca>"]
+readme = "README.md"
+
+packages = [
+    { include = "boto3_helpers", from = "." },
+    { include = "ecsclient", from = "." },
+    { include = "tests", from = "." },
+    { include = "utilities", from = "." }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+python-dotenv = "==0.18.0"
+python-ecsclient = "==1.1.11"
+boto3 = "==1.18.15"
+pandas = "==2.1.4"
+openpyxl = "==3.0.7"
+minio = "==7.2.20"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "==3.9.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
